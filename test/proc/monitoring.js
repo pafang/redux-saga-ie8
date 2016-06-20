@@ -54,7 +54,9 @@ test('proc monitoring', assert => {
     }
   }
 
-  proc(main(), undefined, noop, noop, monitor).done.catch(err => assert.fail(err))
+  // proc(main(), undefined, noop, noop, monitor).done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  proc(main(), undefined, noop, noop, monitor).done().catch(err => assert.fail(err))
 
   setTimeout(() => {
     const expected = {

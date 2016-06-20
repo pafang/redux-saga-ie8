@@ -604,7 +604,10 @@ export default function proc(
       [TASK]: true,
       id,
       name,
-      get done() {
+      // get done() {
+      // IE8-compatible-fix: IE 8 doesn't support getter of Object.defineProperty().
+      // This is API-incompatible change.
+      done() {
         if(iterator._deferredEnd) {
           return iterator._deferredEnd.promise
         } else {

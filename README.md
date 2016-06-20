@@ -1,6 +1,9 @@
-# redux-saga
+# redux-saga-ie8
 
-[![Join the chat at https://gitter.im/yelouafi/redux-saga](https://badges.gitter.im/yelouafi/redux-saga.svg)](https://gitter.im/yelouafi/redux-saga?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![npm version](https://img.shields.io/npm/v/redux-saga.svg?style=flat-square)](https://www.npmjs.com/package/redux-saga)
+(This is IE8-compatible port of [redux-saga](https://github.com/yelouafi/redux-saga), with API-incompatible changes. Notice that this is NOT a
+drop-in replacement for `redux-saga`! See document for details.)
+
+[![Join the chat at https://gitter.im/yelouafi/redux-saga](https://badges.gitter.im/yelouafi/redux-saga.svg)](https://gitter.im/yelouafi/redux-saga?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![npm version](https://img.shields.io/npm/v/redux-saga-ie8.svg?style=flat-square)](https://www.npmjs.com/package/redux-saga-ie8)
 
 An alternative Side Effects middleware (aka Asynchronous Actions) for Redux applications. Instead of dispatching Thunks which get handled by the `redux-thunk` middleware, you create *Sagas* to gather all your Side Effects logic in a central place.
 
@@ -26,7 +29,7 @@ Furthermore, tasks started in `redux-saga` can be cancelled at any moment either
 ## Install
 
 ```sh
-$ npm install --save redux-saga
+$ npm install --save redux-saga-ie8
 ```
 
 Alternatively, you may use the provided UMD builds directly in the `<script>` tag of an HTML page. See [this section](#using-umd-build-in-the-browser).
@@ -51,8 +54,8 @@ The Component dispatches a plain Object action to the Store. We'll create a Saga
 #### `sagas.js`
 
 ```javascript
-import { takeEvery, takeLatest } from 'redux-saga'
-import { call, put } from 'redux-saga/effects'
+import { takeEvery, takeLatest } from 'redux-saga-ie8'
+import { call, put } from 'redux-saga-ie8/effects'
 import Api from '...'
 
 // worker Saga: will be fired on USER_FETCH_REQUESTED actions
@@ -85,13 +88,13 @@ function* mySaga() {
 }
 ```
 
-To run our Saga, we'll have to connect it to the Redux Store using the `redux-saga` middleware.
+To run our Saga, we'll have to connect it to the Redux Store using the `redux-saga-ie8` middleware.
 
 #### `main.js`
 
 ```javascript
 import { createStore, applyMiddleware } from 'redux'
-import createSagaMiddleware from 'redux-saga'
+import createSagaMiddleware from 'redux-saga-ie8'
 
 import reducer from './reducers'
 import mySaga from './sagas'
@@ -128,28 +131,28 @@ thanks @superRaytin (You may check the referenced version of redux-saga)
 
 # Using umd build in the browser
 
-There is also a **umd** build of `redux-saga` available in the `dist/` folder. When using the umd build `redux-saga` is available as `ReduxSaga` in the window object.
+There is also a **umd** build of `redux-saga-ie8` available in the `dist/` folder. When using the umd build `redux-saga-ie8` is available as `ReduxSaga` in the window object.
 
 The umd version is useful if you don't use Webpack or Browserify. You can access it directly from [npmcdn](npmcdn.com).
 
 The following builds are available:
 
-- [https://npmcdn.com/redux-saga/dist/redux-saga.js](https://npmcdn.com/redux-saga/dist/redux-saga.js)  
-- [https://npmcdn.com/redux-saga/dist/redux-saga.min.js](https://npmcdn.com/redux-saga/dist/redux-saga.min.js)
+- [https://npmcdn.com/redux-saga-ie8/dist/redux-saga-ie8.js](https://npmcdn.com/redux-saga-ie8/dist/redux-saga-ie8.js)  
+- [https://npmcdn.com/redux-saga-ie8/dist/redux-saga-ie8.min.js](https://npmcdn.com/redux-saga-ie8/dist/redux-saga-ie8.min.js)
 
-**Important!** If the browser you are targeting doesn't support *ES2015 generators*, you must provide a valid polyfill, such as [the one provided by `babel`](https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.25/browser-polyfill.min.js). The polyfill must be imported before **redux-saga**:
+**Important!** If the browser you are targeting doesn't support *ES2015 generators*, you must provide a valid polyfill, such as [the one provided by `babel`](https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.25/browser-polyfill.min.js). The polyfill must be imported before **redux-saga-ie8**:
 
 ```javascript
 import 'babel-polyfill'
 // then
-import sagaMiddleware from 'redux-saga'
+import sagaMiddleware from 'redux-saga-ie8'
 ```
 
 # Building examples from sources
 
 ```sh
-$ git clone https://github.com/yelouafi/redux-saga.git
-$ cd redux-saga
+$ git clone https://github.com/rockallite/redux-saga-ie8.git
+$ cd redux-saga-ie8
 $ npm install
 $ npm test
 ```

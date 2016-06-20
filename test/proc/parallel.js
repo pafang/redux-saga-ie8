@@ -29,7 +29,9 @@ test('processor array of effects handling', assert => {
     ]
   }
 
-  proc(genFn(), input).done.catch(err => assert.fail(err))
+  // proc(genFn(), input).done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  proc(genFn(), input).done().catch(err => assert.fail(err))
 
   const expected = [1,2, {type: 'action'}];
 
@@ -55,7 +57,8 @@ test('processor empty array', assert => {
     actual = yield []
   }
 
-  proc(genFn(), input).done.catch(err => assert.fail(err))
+  // proc(genFn(), input).done.catch(err => assert.fail(err))
+  proc(genFn(), input).done().catch(err => assert.fail(err))
 
   const expected = [];
 
@@ -89,7 +92,9 @@ test('processor array of effect: handling errors', assert => {
     }
   }
 
-  proc(genFn()).done.catch(err => assert.fail(err))
+  // proc(genFn()).done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  proc(genFn()).done().catch(err => assert.fail(err))
 
   const expected = ['error'];
 
@@ -129,7 +134,9 @@ test('processor array of effect: handling END', assert => {
 
   }
 
-  proc(genFn(), input).done.catch(err => assert.fail(err))
+  // proc(genFn(), input).done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  proc(genFn(), input).done().catch(err => assert.fail(err))
 
   setTimeout(() => {
     assert.deepEqual(actual, 'end',

@@ -24,7 +24,9 @@ test('processor race between effects handling', assert => {
     }) )
   }
 
-  proc(genFn(), input).done.catch(err => assert.fail(err))
+  // proc(genFn(), input).done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  proc(genFn(), input).done().catch(err => assert.fail(err))
 
   const expected = [{timeout: 1}];
 
@@ -56,7 +58,9 @@ test('processor race between effects: handle END', assert => {
     }) )
   }
 
-  proc(genFn(), input).done.catch(err => assert.fail(err))
+  // proc(genFn(), input).done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  proc(genFn(), input).done().catch(err => assert.fail(err))
 
   const expected = [{timeout: 1}];
 

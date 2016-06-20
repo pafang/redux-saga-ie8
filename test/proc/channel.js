@@ -23,7 +23,9 @@ test('proc create channel for store actions', assert => {
 
 
 
-  proc(genFn(), input).done.catch(err => assert.fail(err))
+  // proc(genFn(), input).done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  proc(genFn(), input).done().catch(err => assert.fail(err))
 
   for (var i = 0; i < 10; i++) {
     dispatch({type: 'action', payload: i+1})
@@ -56,7 +58,9 @@ test('proc create channel for store actions (with buffer)', assert => {
     return chan
   }
 
-  proc(genFn(), input).done.catch(err => assert.fail(err))
+  // proc(genFn(), input).done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  proc(genFn(), input).done().catch(err => assert.fail(err))
 
   Promise.resolve().then(() => {
     for (var i = 0; i < 10; i++) {

@@ -1,6 +1,9 @@
-# redux-saga
+# redux-saga-ie8
 
-[![npm version](https://img.shields.io/npm/v/redux-saga.svg?style=flat-square)](https://www.npmjs.com/package/redux-saga)
+(This is IE8-compatible port of [redux-saga](https://github.com/yelouafi/redux-saga), with API-incompatible changes. Notice that this is NOT a
+drop-in replacement for `redux-saga`! See document for details.)
+
+[![npm version](https://img.shields.io/npm/v/redux-saga-ie8.svg?style=flat-square)](https://www.npmjs.com/package/redux-saga-ie8)
 
 Redux 應用程式的另一種 Side Effect 模型。代替 redux-thunk 發送的 thunk。你可以在一個地方建立 *Sagas* 來集中所有的 Side Effect 邏輯。
 
@@ -44,13 +47,13 @@ Redux 應用程式的另一種 Side Effect 模型。代替 redux-thunk 發送的
 安裝
 
 ```
-npm install redux-saga
+npm install redux-saga-ie8
 ```
 
 創造 Saga（採用 Redux 的計數器範例）
 
 ```javascript
-import { take, put } from 'redux-saga'
+import { take, put } from 'redux-saga-ie8'
 // sagas/index.js
 
 function* incrementAsync() {
@@ -73,11 +76,11 @@ function* incrementAsync() {
 export default [incrementAsync]
 ```
 
-將 redux-saga 接到中介軟體管道
+將 redux-saga-ie8 接到中介軟體管道
 
 ```javascript
 // store/configureStore.js
-import sagaMiddleware from 'redux-saga'
+import sagaMiddleware from 'redux-saga-ie8'
 import sagas from '../sagas'
 
 export default function configureStore(initialState) {
@@ -177,19 +180,19 @@ assert.deepEqual( iterator.next().value, ?? ) // 該期待什麼結果 ?
 而我們實際所需的，只是需要確保 `fetchSaga` 引起的呼叫，其呼叫的函式以及參數是正確的。因此，此函式庫提供一些陳述性的方式來引起 Side Effects，讓 Saga 的邏輯更容易測試
 
 ```javascript
-import { call } from 'redux-saga'
+import { call } from 'redux-saga-ie8'
 
 function* fetchSaga() {
   const products = yield call( fetch, '/products' ) // 不會執行 effect
 }
 ```
 
-這裡使用了 `call(fn, ...args)` 函式。**與先前範例的差異之處在於，並不會立即地執行呼叫 fetch，取而代之的是，`call` 創造出 effect 的描述**。如同你在 Redux，使用 action creators 創造出 object 描述 action，將會被 Store 執行，`call` 創造出 object 描述函式呼叫。redux-saga 中介軟體負責函式呼叫並帶著解決的回應再開始 generator。
+這裡使用了 `call(fn, ...args)` 函式。**與先前範例的差異之處在於，並不會立即地執行呼叫 fetch，取而代之的是，`call` 創造出 effect 的描述**。如同你在 Redux，使用 action creators 創造出 object 描述 action，將會被 Store 執行，`call` 創造出 object 描述函式呼叫。redux-saga-ie8 中介軟體負責函式呼叫並帶著解決的回應再開始 generator。
 
 這讓我們在 Redux 環境以外也能夠容易地測試 Generator。
 
 ```javascript
-import { call } from 'redux-saga'
+import { call } from 'redux-saga-ie8'
 
 const iterator = fetchSaga()
 assert.deepEqual(iterator.next().value, call(fetch, '/products')) // 預期的是 call(...) 值
@@ -214,7 +217,7 @@ yield apply(obj, obj.method, [arg1, arg2, ...])
 `call` 及 `apply` 適合在回傳 Promise 的函式。其他函式可用 `cps` 來處理 Node 風格函式（例如，`fn(...args, callback)` 其中 `callback` 是 `(error, result) => ()` 形式）。舉例來說
 
 ```javascript
-import { cps } from 'redux-saga'
+import { cps } from 'redux-saga-ie8'
 
 const content = yield cps(readFile, '/path/to/file')
 ```
@@ -222,7 +225,7 @@ const content = yield cps(readFile, '/path/to/file')
 當然你也可以測試它
 
 ```javascript
-import { cps } from 'redux-saga'
+import { cps } from 'redux-saga-ie8'
 
 const iterator = fetchSaga()
 assert.deepEqual(iterator.next().value, cps(readFile, '/path/to/file') )
@@ -284,7 +287,7 @@ const users  = yield call(fetch, '/users'),
 因為直到第 1 個呼叫解決之前，第 2 個 effect 並不會執行。取而代之，我們要寫成
 
 ```javascript
-import { call } from 'redux-saga'
+import { call } from 'redux-saga-ie8'
 
 // 正確，effects 將會平行地執行
 const [users, repose]  = yield [
@@ -300,7 +303,7 @@ const [users, repose]  = yield [
 下列範例顯示 Saga 觸發了一個遠端擷取請求，並且限制該請求在 1 秒後超時。
 
 ```javascript
-import { race, take, put } from 'redux-saga'
+import { race, take, put } from 'redux-saga-ie8'
 
 function* fetchPostsWithTimeout() {
   while( yield take(FETCH_POSTS) ) {
@@ -441,7 +444,7 @@ FETCH_POSTS............................................. 遺漏
 為了表達非阻塞式呼叫，我們可以使用 `fork` 函式。用 `fork` 改寫前述範例的一種可能寫法是
 
 ```javascript
-import { fork, call, take, put } from 'redux-saga'
+import { fork, call, take, put } from 'redux-saga-ie8'
 
 function* fetchPosts() {
   yield put( actions.requestPosts() )
@@ -466,7 +469,7 @@ yield fork(generator, ...args)  // Generator 函式
 `yield fork(api)` 的結果是個 *任務描述子*。為了在稍候能夠取得 forked 任務的結果，我們使用 `join` 函式
 
 ```javascript
-import { fork, join } from 'redux-saga'
+import { fork, join } from 'redux-saga-ie8'
 
 function* child() { ... }
 
@@ -501,8 +504,10 @@ function *parent() {
     <td>任務拋出的錯誤。`undefined` 當任務仍然在執行中</td>
   </tr>
   <tr>
-    <td>task.done</td>
+    <td>task.done()</td>
     <td>
+      (API-incompatible change. Use property `done` in original redux-saga)
+
       下列兩種其一的 Promise
         <ul>
           <li>帶有任務回傳值的解決</li>
@@ -521,7 +526,7 @@ function *parent() {
 任務持續的執行，直到 `STOP_BACKGROUND_SYNC` action 觸發。接著將會取消背景任務並且再次等待下一個 `START_BACKGROUND_SYNC` action。
 
 ```javascript
-import { take, put, call, fork, cancel, SagaCancellationException } from 'redux-saga'
+import { take, put, call, fork, cancel, SagaCancellationException } from 'redux-saga-ie8'
 import actions from 'somewhere'
 import { someApi, delay } from 'somewhere'
 
@@ -603,7 +608,7 @@ function* subtask2() {
 
 ```javascript
 import serverSaga from 'somewhere'
-import {runSaga, storeIO} from 'redux-saga'
+import {runSaga, storeIO} from 'redux-saga-ie8'
 import configureStore from 'somewhere'
 import rootReducer from 'somewhere'
 
@@ -611,7 +616,9 @@ const store = configureStore(rootReducer)
 runSaga(
   serverSaga(store.getState),
   storeIO(store)
-).done.then(...)
+// ).done.then(...)
+// API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+).done().then(...)
 ```
 
 `runSaga` 回傳一個任務物件。就像是 `fork` effect 回傳的一樣。
@@ -645,8 +652,8 @@ runSaga(iterator, {subscribe, dispatch}, [monitor])
 #從原始碼組建範例
 
 ```
-git clone https://github.com/yelouafi/redux-saga.git
-cd redux-saga
+git clone https://github.com/rockallite/redux-saga-ie8.git
+cd redux-saga-ie8
 npm install
 npm test
 ```
@@ -685,9 +692,9 @@ npm start
 
 #在瀏覽器使用 umd 組建
 
-`redux-saga` 有 **umd** 組建位於 `dist/` 目錄之下。使用 `redux-saga` 的 umd 組建可以從 window 物件下的 `ReduxSaga` 取得。當你沒有使用 webpack 或 browserify 時，umd 版本是非常有用的，你可以直接從 [npmcdn](npmcdn.com) 取得。包含下列組建：
+`redux-saga-ie8` 有 **umd** 組建位於 `dist/` 目錄之下。使用 `redux-saga-ie8` 的 umd 組建可以從 window 物件下的 `ReduxSaga` 取得。當你沒有使用 webpack 或 browserify 時，umd 版本是非常有用的，你可以直接從 [npmcdn](npmcdn.com) 取得。包含下列組建：
 
-- [https://npmcdn.com/redux-saga/dist/redux-saga.js](https://npmcdn.com/redux-saga/dist/redux-saga.js)  
-- [https://npmcdn.com/redux-saga/dist/redux-saga.min.js](https://npmcdn.com/redux-saga/dist/redux-saga.min.js)
+- [https://npmcdn.com/redux-saga-ie8/dist/redux-saga-ie8.js](https://npmcdn.com/redux-saga-ie8/dist/redux-saga-ie8.js)  
+- [https://npmcdn.com/redux-saga-ie8/dist/redux-saga-ie8.min.js](https://npmcdn.com/redux-saga-ie8/dist/redux-saga-ie8.min.js)
 
-**重要！** 如果你的目標瀏覽器不支援 _es2015 generators_，你需要提供合適的 polyfill，例如，*babel* 所提供的：[browser-polyfill.min.js](https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.25/browser-polyfill.min.js)。這個 polyfill 必須在 **redux-saga** 之前載入。
+**重要！** 如果你的目標瀏覽器不支援 _es2015 generators_，你需要提供合適的 polyfill，例如，*babel* 所提供的：[browser-polyfill.min.js](https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.25/browser-polyfill.min.js)。這個 polyfill 必須在 **redux-saga-ie8** 之前載入。

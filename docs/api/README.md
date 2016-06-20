@@ -632,8 +632,10 @@ The Task interface specifies the result of running a Saga using `fork`, `middlew
     <td>task thrown error. `undefined` if task is still running</td>
   </tr>
   <tr>
-    <td>task.done</td>
+    <td>task.done()</td>
     <td>
+      (API-incompatible change. Use property `done` in original redux-saga)
+
       a Promise which is either:
         <ul>
           <li>resolved with task's return value</li>

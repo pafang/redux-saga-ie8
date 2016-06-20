@@ -21,7 +21,9 @@ test('processor cps call handling', assert => {
     }
   }
 
-  proc(genFn()).done.catch(err => assert.fail(err))
+  // proc(genFn()).done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  proc(genFn()).done().catch(err => assert.fail(err))
 
   const expected = ['call 1', 'call err'];
 
@@ -66,7 +68,9 @@ test('processor synchronous cps failures handling', assert => {
     }
   }
 
-  proc(genFnParent(),undefined,dispatch).done.catch(err => assert.fail(err))
+  // proc(genFnParent(),undefined,dispatch).done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  proc(genFnParent(),undefined,dispatch).done().catch(err => assert.fail(err))
 
 
   const expected = ['start parent','startChild','failure child','success parent'];

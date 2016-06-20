@@ -106,8 +106,14 @@ export function channel(buffer) {
   }
 
   return {take, put, close,
-    get __takers__() { return takers },
-    get __closed__() { return closed }
+    // get __takers__() { return takers },
+    // IE8-compatible-fix: IE 8 doesn't support getter of Object.defineProperty().
+    // This is API-incompatible change.
+    __takers__() { return takers },
+    // get __closed__() { return closed }
+    // IE8-compatible-fix: IE 8 doesn't support getter of Object.defineProperty().
+    // This is API-incompatible change.
+    __closed__() { return closed }
   }
 }
 
@@ -132,7 +138,10 @@ export function eventChannel(subscribe, buffer = buffers.none(), matcher) {
   return {
     take: chan.take,
     close: () => {
-      if(!chan.__closed__) {
+      // if(!chan.__closed__) {
+      // IE8-compatible-fix: API-incompatible change
+      const chanClosed = typeof chan.__closed__ === 'function' ? chan.__closed__() : chan.__closed__
+      if(!chanClosed) {
         chan.close()
         unsubscribe()
       }
