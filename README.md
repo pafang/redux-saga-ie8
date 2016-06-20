@@ -12,7 +12,7 @@ This means application logic lives in 2 places:
 - Reducers are responsible for handling state transitions between actions.
 - Sagas are responsible for orchestrating complex/asynchronous operations.
 
-Sagas are created using Generator functions. If you're not familiar with them you may find [some useful links here.](http://yelouafi.github.io/redux-saga/docs/ExternalResources.html)
+Sagas are created using Generator functions. If you're not familiar with them you may find [some useful links here.](http://rockallite.github.io/redux-saga-ie8/docs/ExternalResources.html)
 
 Unlike Thunks which get invoked on every action by Action Creators, Sagas are fired only once at the start of the application (but startup Sagas may fire other Sagas dynamically). They can be seen as Processes running in the background. Sagas watch the actions dispatched to the Store, then decide what to do based on dispatched actions: Either making an asynchronous call (like an AJAX request), dispatching other actions to the Store, or even starting other Sagas dynamically.
 
@@ -115,14 +115,14 @@ sagaMiddleware.run(mySaga)
 
 # Documentation
 
-- [Introduction](http://yelouafi.github.io/redux-saga/docs/introduction/index.html)
-- [Basic Concepts](http://yelouafi.github.io/redux-saga/docs/basics/index.html)
-- [Advanced Concepts](http://yelouafi.github.io/redux-saga/docs/advanced/index.html)
-- [Recipes](http://yelouafi.github.io/redux-saga/docs/recipes/index.html)
-- [External Resources](http://yelouafi.github.io/redux-saga/docs/ExternalResources.html)
-- [Troubleshooting](http://yelouafi.github.io/redux-saga/docs/Troubleshooting.html)
-- [Glossary](http://yelouafi.github.io/redux-saga/docs/Glossary.html)
-- [API Reference](http://yelouafi.github.io/redux-saga/docs/api/index.html)
+- [Introduction](http://rockallite.github.io/redux-saga-ie8/docs/introduction/index.html)
+- [Basic Concepts](http://rockallite.github.io/redux-saga-ie8/docs/basics/index.html)
+- [Advanced Concepts](http://rockallite.github.io/redux-saga-ie8/docs/advanced/index.html)
+- [Recipes](http://rockallite.github.io/redux-saga-ie8/docs/recipes/index.html)
+- [External Resources](http://rockallite.github.io/redux-saga-ie8/docs/ExternalResources.html)
+- [Troubleshooting](http://rockallite.github.io/redux-saga-ie8/docs/Troubleshooting.html)
+- [Glossary](http://rockallite.github.io/redux-saga-ie8/docs/Glossary.html)
+- [API Reference](http://rockallite.github.io/redux-saga-ie8/docs/api/index.html)
 
 There is also a [chinese version of the docs website](https://github.com/superRaytin/redux-saga-in-chinese)
 thanks @superRaytin (You may check the referenced version of redux-saga)
