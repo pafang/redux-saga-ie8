@@ -28,7 +28,7 @@ function* watchRequests() {
 function* handleRequest(payload) { ... }
 ```
 
-The above example illustrates the typical *watch-and-fork* pattern. The `watchRequests` saga is using `fork` to avoid non-blocking and thus not missing any action from the store. A `handleRequest` task is created on each `REQUEST` action. So if there are many actions fired at a rapid race there can be many `handleRequest` tasks executing on parallel.
+The above example illustrates the typical *watch-and-fork* pattern. The `watchRequests` saga is using `fork` to avoid blocking and thus not missing any action from the store. A `handleRequest` task is created on each `REQUEST` action. So if there are many actions fired at a rapid race there can be many `handleRequest` tasks executing on parallel.
 
 Imagine now that our requirement is as follow: we want to process `REQUEST` only one by one. Meaning if we have at a moment say four actions, we want to handle the 1st `REQUEST` action, then only after finishing processing the action we process the 2nd action on so on...
 
@@ -104,6 +104,8 @@ function countdown(secs) {
 ```
 
 The first argument `eventChannel` is a *subscriber* function. The rule of the subscriber is to initialize the external event source (above using `setInterval`), then routes all incoming events from the source to the channel by invoking the supplied `emitter`. In the above example we're invoking `emitter` on each second.
+
+> Note: You need to sanitize your event sources as to not pass null or undefined through the event channel. While it's fine to pass numbers through, we'd recommend structuring your event channel data like your redux actions. `{ number }` over `number`.
 
 Note also the invocation `emitter(END)`. We use this to notify any channel consumer that the channel has been closed, meaning no other message will come through this channel.
 
