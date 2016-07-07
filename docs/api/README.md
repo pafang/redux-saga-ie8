@@ -25,7 +25,7 @@
   * [`join(task)`](#jointask)
   * [`cancel(task)`](#canceltask)
   * [`select(selector, ...args)`](#selectselector-args)
-  * [`actionChannel(pattern, [buffer])`](#actionchannelpatternbuffer)
+  * [`actionChannel(pattern, [buffer])`](#actionchannelpattern-buffer)
   * [`cancelled()`](#cancelled)
 * [`Effect combinators`](#effect-combinators)
   * [`race(effects)`](#raceeffects)
@@ -34,10 +34,10 @@
   * [`Task`](#task)
   * [`Channel`](#channel)
   * [`Buffer`](#buffer)
-  * `SagaMonitor`
+  * [`SagaMonitor`](#sagamonitor)
 * [`External API`](#external-api)
-  * [`runSaga(iterator, {subscribe, dispatch, getState}, [monitor])`](#runsagaiterator-subscribe-dispatch-getstate-monitor)
-* 'Utils'
+  * [`runSaga(iterator, options)`](#runsagaiterator-options)
+* [`Utils`](#utils)
   * [`channel([buffer])`](#channelbuffer)
   * [`eventChannel(subscribe, [buffer], matcher)`](#eventchannelsubscribebuffermatcher)
   * [`buffers`](#buffers)
@@ -49,7 +49,13 @@
 
 Creates a Redux middleware and connects the Sagas to the Redux Store
 
-- `options: Object` - A list of options to pass to the middleware. For now there is only one supported options: `sagaMonitor` which indicates a [SagaMonitor](#sagamonitor). If a SagaMonitor is provided, the middleware will deliver monitoring events to the monitor.
+- `options: Object` - A list of options to pass to the middleware. Currently supported options are:
+
+- `sagaMonitor` : [SagaMonitor](#sagamonitor) - If a Saga Monitor is provided, the middleware will deliver monitoring events to the monitor.
+
+- `logger` : Function -  defines a custom logger for the middleware. By default, the middleware logs all errors and
+warnings to the console. This option tells the middleware to send errors/warnings to the provided logger instead. The logger is called with the params `(level, ...args)`. The 1st indicates the level of the log ('info', 'warning' or 'error'). The rest
+corresponds to the following arguments (You can use `args.join(' ') to concatenate all args into a single StringS`).
 
 #### Example
 
@@ -165,14 +171,13 @@ any previous `saga` task started previous if it's still running.
 
 Each time an action is dispatched to the store. And if this action matches `pattern`, `takeLatest`
 starts a new `saga` task in the background. If a `saga` task was started previously (on the last action dispatched
-before the actual action), and if this task is still running, the task will be cancelled by throwing
-a `SagaCancellationException` inside it.
+before the actual action), and if this task is still running, the task will be cancelled.
 
 - `pattern: String | Array | Function` - for more information see docs for [`take(pattern)`](#takepattern)
 
 - `saga: Function` - a Generator function
 
-- `args: Array<any>` - arguments to be passed to the started task. `takeEvery` will add the
+- `args: Array<any>` - arguments to be passed to the started task. `takeLatest` will add the
 incoming action to the argument list (i.e. the action will be the last argument provided to `saga`)
 
 #### Example
@@ -374,6 +379,12 @@ of a previously forked task.
 
 - `task: Task` - A [Task](#task) object returned by a previous `fork`
 
+#### Notes
+
+`join` will resolve to the same outcome of the joined task (success or error). If the joined
+the task is cancelled, the cancellation will also propagate to the Saga executing the join effect
+effect. Similarly, any potential callers of those joiners will be cancelled as well.
+
 ### `cancel(task)`
 
 Creates an Effect description that instructs the middleware to cancel a previously forked task.
@@ -382,23 +393,22 @@ Creates an Effect description that instructs the middleware to cancel a previous
 
 #### Notes
 
-To cancel a running Generator, the middleware will throw a `SagaCancellationException` inside
-it.
+To cancel a running task, the middleware will invoke `return` on the underlying Generator
+object. This will cancel the current Effect in the task and jump to the finally block (if defined).
 
-Cancellation propagates downward. When cancelling a Generator, the middleware will also
-cancel the current Effect where the Generator is currently blocked. If the current Effect
-is a call to another Generator, then the Generator will also be cancelled.
+Inside the finally block, you can execute any cleanup logic or dispatch some action to keep the
+store in a consistent state (e.g. reset the state of a spinner to false when an ajax request
+is cancelled). You can check inside the finally block if a Saga was cancelled by issuing
+a `yield cancelled()`.
 
-A cancelled Generator can catch `SagaCancellationException`s in order to perform some cleanup
-logic before it terminates (e.g. clear a `isFetching` flag in the state if the Generator was
-in middle of an AJAX call).
+Cancellation propagates downward to child sagas. When cancelling a task, the middleware will also
+cancel the current Effect (where the task is currently blocked). If the current Effect
+is a call to another Saga, it will be also cancelled. When cancelling a Saga, all *attached
+forks* (sagas forked using `yield fork()`) will be cancelled. This means that cancellation
+effectively affects the whole execution tree that belongs to the cancelled task.
 
-Note that uncaught `SagaCancellationException`s are not bubbled upward, if a Generator
-doesn't handle cancellation exceptions, the exception will not bubble to its parent
-Generator.
-
-`cancel` is a non-blocking Effect. i.e. the Generator will resume immediately after
-throwing the cancellation exception.
+`cancel` is a non-blocking Effect. i.e. the Saga executing it will resume immediately after
+performing the cancellation.
 
 For functions which return Promise results, you can plug your own cancellation logic
 by attaching a `[CANCEL]` to the promise.
@@ -681,11 +691,55 @@ Used to implement the buffering strategy for a channel. The Buffer interface def
 (e.g. a dropping buffer can drop any new message exceeding a given limit)  
 - `take()` used to retrieve any buffered message. Note the behavior of this method has to be consistent with `isEmpty`
 
+### SagaMonitor
+
+Used by the middleware to dispatch monitoring events. Actually the middleware dispatches 4 events:
+
+- When an effect is triggered (via `yield someEffect`) the middleware invokes `sagaMonitor.effectTriggered`  
+
+- If the effect is resolved with success the middleware invokes `sagaMonitor.effectResolved`  
+
+- If the effect is rejected with an error the middleware invokes `sagaMonitor.effectRejected`
+
+- finally is the effect is cancelled the middleware invokes `sagaMonitor.effectCancelled`
+
+Below the signature for each method
+
+- `effectTriggered(options)` : where options is an object with the following fields
+
+  - `effectId` : Number - Unique ID assigned to the yielded effect   
+
+  - `parentEffectId` : Number - ID of the parent Effect. In the case of a `race` or `parallel` effect, all
+  effects yielded inside will have the direct race/parallel effect as a parent. In case of a top-level effect, the
+  parent will be the containing Saga   
+
+  - `label` : String - In case of a `race` effect, all child effects will be assigned as label the corresponding
+  keys of the object passed to `race`
+
+  - `effect` : Object - the yielded effect itself
+
+- `effectResolved(effectId, result)`
+
+    - `effectId` : Number - The ID of the yielded effect
+
+    - `result` : any - The result of the successful resolution of the effect
+
+- `effectRejected(effectId, error)`
+
+    - `effectId` : Number - The ID of the yielded effect
+
+    - `error` : any - Error raised whith the rejection of the effect
+
+
+- `effectCancelled(effectId)`
+
+    - `effectId` : Number - The ID of the yielded effect
+
 
 ## External API
 ------------------------
 
-### `runSaga(iterator, {subscribe, dispatch, getState}, [monitor])`
+### `runSaga(iterator, options)`
 
 Allows starting sagas outside the Redux middleware environment. Useful if you want to
 connect a Saga to external input/output, other than store actions.
@@ -695,7 +749,7 @@ connect a Saga to external input/output, other than store actions.
 
 - `iterator: {next, throw}` - an Iterator object, Typically created by invoking a Generator function
 
-- `{subscribe, dispatch, getState}: Object` - an Object which exposes `subscribe`, `dispatch` and `getState` methods
+- `options: Object` - currently supported options are:
 
   - `subscribe(callback): Function` - A function which accepts a callback and returns an `unsubscribe` function
 
@@ -707,8 +761,9 @@ connect a Saga to external input/output, other than store actions.
 
     - `getState(): Function` - used to fulfill `select` and `getState` effects
 
-- `monitor(sagaAction): Function` (optional): a callback which is used to dispatch all Saga related events. In the middleware version, all actions are dispatched to the Redux store. See the [sagaMonitor example](https://github.com/yelouafi/redux-saga/tree/master/examples/sagaMonitor) for usage.
-  - `sagaAction: Object` - action dispatched by Sagas to notify `monitor` of Saga related events.
+    - `sagaMonitor` : [SagaMonitor](#sagamonitor) - see docs for [`createSagaMiddleware(options)`](#createsagamiddlewareoptions)
+
+    - `logger` : `Function` - see docs for [`createSagaMiddleware(options)`](#createsagamiddlewareoptions)
 
 #### Notes
 

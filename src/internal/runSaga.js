@@ -6,9 +6,10 @@ export function runSaga(
   {
     subscribe,
     dispatch,
-    getState
-  },
-  monitor
+    getState,
+    sagaMonitor,
+    logger
+  }
 ) {
 
   check(iterator, is.iterator, "runSaga must be called on an iterator")
@@ -18,6 +19,6 @@ export function runSaga(
     subscribe,
     dispatch,
     getState,
-    monitor
+    {sagaMonitor, logger}
   )
 }
