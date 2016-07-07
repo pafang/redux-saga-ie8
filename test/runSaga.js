@@ -60,12 +60,16 @@ test('runSaga', assert => {
     {type: 'ACTION-3'}, 'ACTION-3'
   ]
 
-  task.done.then(() =>
+  // task.done.then(() =>
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  task.done().then(() =>
     assert.deepEqual(actual, expected,
       'runSaga must connect the provided iterator to the store, and run it'
     )
   )
 
-  task.done.catch(err => assert.fail(err))
+  // task.done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  task.done().catch(err => assert.fail(err))
 
 })

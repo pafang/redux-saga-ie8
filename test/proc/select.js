@@ -25,7 +25,9 @@ test('processor select/getState handling', assert => {
     actual.push( yield io.select(counterSelector)  )
   }
 
-  proc(genFn(), undefined, undefined, () => state).done.catch(err => assert.fail(err))
+  // proc(genFn(), undefined, undefined, () => state).done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  proc(genFn(), undefined, undefined, () => state).done().catch(err => assert.fail(err))
 
   const expected = [0,0,2,1,1];
 

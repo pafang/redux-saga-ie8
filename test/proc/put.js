@@ -15,7 +15,9 @@ test('proc put handling', assert => {
     yield io.put(2)
   }
 
-  proc(genFn('arg'), undefined, dispatch).done.catch(err => assert.fail(err))
+  // proc(genFn('arg'), undefined, dispatch).done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  proc(genFn('arg'), undefined, dispatch).done().catch(err => assert.fail(err))
 
   const expected = ['arg', 2];
   setTimeout(() => {
@@ -43,7 +45,9 @@ test('proc put in a channel', assert => {
     yield io.put(chan, 2)
   }
 
-  proc(genFn('arg')).done.catch(err => assert.fail(err))
+  // proc(genFn('arg')).done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  proc(genFn('arg')).done().catch(err => assert.fail(err))
 
   const expected = ['arg', 2];
   setTimeout(() => {
@@ -66,7 +70,9 @@ test('proc async put\'s response handling', assert => {
     actual.push(yield io.put.sync(2))
   }
 
-  proc(genFn('arg'), undefined, dispatch).done.catch(err => assert.fail(err))
+  // proc(genFn('arg'), undefined, dispatch).done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  proc(genFn('arg'), undefined, dispatch).done().catch(err => assert.fail(err))
 
   const expected = ['arg', 2];
   setTimeout(() => {
@@ -92,7 +98,9 @@ test('proc error put\'s response handling', assert => {
     }
   }
 
-  proc(genFn('arg'), undefined, dispatch).done.catch(err => assert.fail(err))
+  // proc(genFn('arg'), undefined, dispatch).done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  proc(genFn('arg'), undefined, dispatch).done().catch(err => assert.fail(err))
 
   const expected = ['error arg'];
   setTimeout(() => {
@@ -127,7 +135,9 @@ test('proc nested puts handling', assert => {
     yield io.fork(genA)
   }
 
-  proc(root(), em.subscribe, em.emit).done.catch(err => assert.fail(err))
+  // proc(root(), em.subscribe, em.emit).done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  proc(root(), em.subscribe, em.emit).done().catch(err => assert.fail(err))
 
   const expected = ['put a', 'put b'];
   setTimeout(() => {

@@ -15,7 +15,9 @@ test('proc native promise handling', assert => {
     }
   }
 
-  const endP = proc(genFn()).done
+  // const endP = proc(genFn()).done
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  const endP = proc(genFn()).done()
   endP.catch(err => assert.fail(err))
 
   endP.then(() => {
@@ -39,7 +41,9 @@ test('proc native promise handling: undefined errors', assert => {
     }
   }
 
-  const endP = proc(genFn()).done
+  // const endP = proc(genFn()).done
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  const endP = proc(genFn()).done()
   endP.catch(err => assert.fail(err))
 
   endP.then(() => {

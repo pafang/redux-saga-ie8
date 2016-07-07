@@ -56,7 +56,9 @@ app.use(function(req, res) {
       const rootComp = <Root store={store} routes={routes} history={createMemoryHistory()} renderProps={renderProps} type="server"/>
 
 
-      store.runSaga(rootSaga).done.then(() => {
+      // store.runSaga(rootSaga).done.then(() => {
+      // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+      store.runSaga(rootSaga).done().then(() => {
         console.log('sagas complete')
         res.status(200).send(
           layout(

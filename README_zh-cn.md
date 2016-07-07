@@ -1,6 +1,9 @@
-# redux-saga
+# redux-saga-ie8
 
-[![npm version](https://img.shields.io/npm/v/redux-saga.svg?style=flat-square)](https://www.npmjs.com/package/redux-saga)
+(This is IE8-compatible port of [redux-saga](https://github.com/yelouafi/redux-saga), with API-incompatible changes. Notice that this is NOT a
+drop-in replacement for `redux-saga`! See document for details.)
+
+[![npm version](https://img.shields.io/npm/v/redux-saga-ie8.svg?style=flat-square)](https://www.npmjs.com/package/redux-saga-ie8)
 
 这是Redux应用的又一个副作用模型。可以用来替换redux-thunk中间件。通过创建 *Sagas* 去搜集所有的副作用逻辑到一个集中过的地方。
 
@@ -46,13 +49,13 @@ Sagas 使用Generator functions（生成器函数）创建。
 安装
 
 ```
-npm install redux-saga
+npm install redux-saga-ie8
 ```
 
 创建Saga (使用Redux的计数器例子)
 
 ```javascript
-import { take, put } from 'redux-saga'
+import { take, put } from 'redux-saga-ie8'
 // sagas/index.js
 
 function* incrementAsync() {
@@ -75,11 +78,11 @@ function* incrementAsync() {
 export default [incrementAsync]
 ```
 
-插入redux-saga到中间件管道
+插入redux-saga-ie8到中间件管道
 
 ```javascript
 // store/configureStore.js
-import sagaMiddleware from 'redux-saga'
+import sagaMiddleware from 'redux-saga-ie8'
 import sagas from '../sagas'
 
 export default function configureStore(initialState) {
@@ -178,20 +181,20 @@ assert.deepEqual( iterator.next().value, ?? ) // what do we expect ?
 我们实际上需要的，仅仅是确保`fetchSaga`被调用并且参数正确。为了这个目的，这个类库提供了一些声明方式去迭代副作用，并且确保容易测试Saga逻辑。
 
 ```javascript
-import { call } from 'redux-saga'
+import { call } from 'redux-saga-ie8'
 
 function* fetchSaga() {
   const products = yield call( fetch, '/products' ) // don't run the effect
 }
 ```
 
-我们这里使用 `call(fn, ...args)` 函数. **于先前的不同的是我们不立刻执行获取调用，   通过调用`call` 创建一个effect 的描述**。就像在Redux中，你使用action创建者去创建一个简单的对象去描述这个action，这个action会被Store执行，`call` 创建一个简单对象去描述这个函数的调用。redux-saga 中间件维护这个函数的调用的执行，并且当执行完成的时候，唤醒生成器。
+我们这里使用 `call(fn, ...args)` 函数. **于先前的不同的是我们不立刻执行获取调用，   通过调用`call` 创建一个effect 的描述**。就像在Redux中，你使用action创建者去创建一个简单的对象去描述这个action，这个action会被Store执行，`call` 创建一个简单对象去描述这个函数的调用。redux-saga-ie8 中间件维护这个函数的调用的执行，并且当执行完成的时候，唤醒生成器。
 
 
 它允许我们容易的在Redux环境的外部去测试生成器.
 
 ```javascript
-import { call } from 'redux-saga'
+import { call } from 'redux-saga-ie8'
 
 const iterator = fetchSaga()
 assert.deepEqual(iterator.next().value, call(fetch, '/products')) // expects a call(...) value
@@ -211,7 +214,7 @@ yield apply(context, myfunc, [arg1, arg2, ...])
 是`(error, result) => ()`的形式)。 举个例子
 
 ```javascript
-import { cps } from 'redux-saga'
+import { cps } from 'redux-saga-ie8'
 
 const content = yield cps(readFile, '/path/to/file')
 ```
@@ -219,7 +222,7 @@ const content = yield cps(readFile, '/path/to/file')
 当然测试的时候只要如下调用测试就可以了。
 
 ```javascript
-import { cps } from 'redux-saga'
+import { cps } from 'redux-saga-ie8'
 
 const iterator = fetchSaga()
 assert.deepEqual(iterator.next().value, cps(readFile, '/path/to/file') )
@@ -279,7 +282,7 @@ const users  = yield call(fetch, '/users'),
 因为第二个Effect将等到第一个执行结束后再执行，我们必须改成如下形式：
 
 ```javascript
-import { call } from 'redux-saga'
+import { call } from 'redux-saga-ie8'
 
 // correct, effects will get executed in parallel
 const [users, repose]  = yield [
@@ -295,7 +298,7 @@ const [users, repose]  = yield [
 下面的例子展示Saga触发一个远程的获取请求和强迫这个请求1秒过期。
 
 ```javascript
-import { race, take, put } from 'redux-saga'
+import { race, take, put } from 'redux-saga-ie8'
 
 function* fetchPostsWithTimeout() {
   while( yield take(FETCH_POSTS) ) {
@@ -435,7 +438,7 @@ FETCH_POSTS............................................. missed
 当`watchFetch`阻塞在`fetchApi`调用，所有的在调用和响应之间的`FETCH_POSTS`都被错过。为了表达不阻塞的调用，我们可以使用`fork`函数。上面的例子可以使用`fork`重写，如下：
 
 ```javascript
-import { fork, call, take, put } from 'redux-saga'
+import { fork, call, take, put } from 'redux-saga-ie8'
 
 function* fetchPosts() {
   yield put( actions.requestPosts() )
@@ -461,7 +464,7 @@ yield fork( put(someActions) )  // Simple effects
 `yield fork(api)`的结果是一个 *任务描述符*。为了延迟取得分支的任务结果，我们使用`join`函数
 
 ```javascript
-import { fork, join } from 'redux-saga'
+import { fork, join } from 'redux-saga-ie8'
 
 function* child() { ... }
 
@@ -496,8 +499,11 @@ function *parent() {
     <td>任务抛出异常。如果任务还在运行中则返回 `undefined` </td>
   </tr>
   <tr>
-    <td>task.done</td>
-    <td>一个Promise
+    <td>task.done()</td>
+    <td>
+    (API-incompatible change. Use property `done` in original redux-saga)
+
+    一个Promise
         <ul>
           <li>任务完成并返回值 with task's return value</li>
           <li>任务失败并抛出异常</li>
@@ -517,7 +523,7 @@ function *parent() {
 这个任务会不断的执行，直到 `STOP_BACKGROUND_SYNC` action 触发。 这时我们取消后台任务并且等待下一个`START_BACKGROUND_SYNC` action.   
 
 ```javascript
-import { take, put, call, fork, cancel, SagaCancellationException } from 'redux-saga'
+import { take, put, call, fork, cancel, SagaCancellationException } from 'redux-saga-ie8'
 import actions from 'somewhere'
 import { someApi, delay } from 'somewhere'
 
@@ -602,7 +608,7 @@ function* subtask2() {
 
 ```javascript
 import serverSaga from 'somewhere'
-import {runSaga, storeIO} from 'redux-saga'
+import {runSaga, storeIO} from 'redux-saga-ie8'
 import configureStore from 'somewhere'
 import rootReducer from 'somewhere'
 
@@ -610,7 +616,9 @@ const store = configureStore(rootReducer)
 runSaga(
   serverSaga(store.getState),
   storeIO(store)
-).done.then(...)
+// ).done.then(...)
+// API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+).done().then(...)
 ```
 
 `runSaga`返回一个任务对象，就像`fork` effect的返回值。
@@ -636,7 +644,7 @@ runSaga(iterator, {subscribe, dispatch}, [monitor])
 - `dispatch(action) => result`: 用于完成 `put` effect。每次运行`yield put(action)`，`dispatch`会和`action`一起被调用，`dispatch`的返回值被用于完成`put` effect。Promise结果自动完成或者取消。
 
 - `monitor(sagaAction)` (可选): 是被用于调用所有Saga关联事件的回调。在中间件的版本，所有action都调度到Redux Store。详细查看[sagaMonitor example]
-  (https://github.com/yelouafi/redux-saga/blob/master/examples/sagaMonitor.js) 的用法.
+  (https://github.com/rockallite/redux-saga-ie8/blob/master/examples/sagaMonitor.js) 的用法.
 
 参数`subscribe`用于完成`take(action)` effects，每次`subscribe` 运行一个action或者他的回调，Saga会阻塞在`take(PATTERN)`，并且take匹配当前即将运行的action，并且唤醒这个action。
 
@@ -650,8 +658,8 @@ runSaga(iterator, {subscribe, dispatch}, [monitor])
 你可以手动运行例子，或者打开每个例子根目录的`index.html`去运行。
 
 ```
-git clone https://github.com/yelouafi/redux-saga.git
-cd redux-saga
+git clone https://github.com/rockallite/redux-saga-ie8.git
+cd redux-saga-ie8
 npm install
 npm test
 ```
@@ -702,9 +710,9 @@ npm start
 
 #Using umd build in the browser
 
-在`dist/`目录，`redux-saga`有一个可用的 **umd** 构建。使用umd构建，`redux-saga` 可以作为`ReduxSaga`在window对象中使用。如果你不使用webpack或者browserify，umd版本非常有用，你可以通过[npmcdn](npmcdn.com)直接使用。
+在`dist/`目录，`redux-saga-ie8`有一个可用的 **umd** 构建。使用umd构建，`redux-saga-ie8` 可以作为`ReduxSaga`在window对象中使用。如果你不使用webpack或者browserify，umd版本非常有用，你可以通过[npmcdn](npmcdn.com)直接使用。
 下面是可用的构建:
-[https://npmcdn.com/redux-saga/dist/redux-saga.js](https://npmcdn.com/redux-saga/dist/redux-saga.js)
-[https://npmcdn.com/redux-saga/dist/redux-saga.min.js](https://npmcdn.com/redux-saga/dist/redux-saga.min.js)
+[https://npmcdn.com/redux-saga-ie8/dist/redux-saga-ie8.js](https://npmcdn.com/redux-saga-ie8/dist/redux-saga-ie8.js)
+[https://npmcdn.com/redux-saga-ie8/dist/redux-saga-ie8.min.js](https://npmcdn.com/redux-saga-ie8/dist/redux-saga-ie8.min.js)
 
-**重要提示!** 如果目标浏览器不支持 _es2015 generators_ 你必须使用好的转换库，如 *babel*: [browser-polyfill.min.js](https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.25/browser-polyfill.min.js). 这个库必须在 **redux-saga** 前被加载.
+**重要提示!** 如果目标浏览器不支持 _es2015 generators_ 你必须使用好的转换库，如 *babel*: [browser-polyfill.min.js](https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.25/browser-polyfill.min.js). 这个库必须在 **redux-saga-ie8** 前被加载.
