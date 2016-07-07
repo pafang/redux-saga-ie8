@@ -61,78 +61,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 	exports.utils = exports.effects = exports.CANCEL = exports.delay = exports.takeLatest = exports.takeEvery = exports.buffers = exports.channel = exports.eventChannel = exports.END = exports.runSaga = undefined;
 
-	var _runSaga = __webpack_require__(9);
-
-	Object.defineProperty(exports, 'runSaga', {
-	  enumerable: true,
-	  get: function get() {
-	    return _runSaga.runSaga;
-	  }
-	});
-
-	var _channel = __webpack_require__(2);
-
-	Object.defineProperty(exports, 'END', {
-	  enumerable: true,
-	  get: function get() {
-	    return _channel.END;
-	  }
-	});
-	Object.defineProperty(exports, 'eventChannel', {
-	  enumerable: true,
-	  get: function get() {
-	    return _channel.eventChannel;
-	  }
-	});
-	Object.defineProperty(exports, 'channel', {
-	  enumerable: true,
-	  get: function get() {
-	    return _channel.channel;
-	  }
-	});
-
-	var _buffers = __webpack_require__(4);
-
-	Object.defineProperty(exports, 'buffers', {
-	  enumerable: true,
-	  get: function get() {
-	    return _buffers.buffers;
-	  }
-	});
-
-	var _sagaHelpers = __webpack_require__(10);
-
-	Object.defineProperty(exports, 'takeEvery', {
-	  enumerable: true,
-	  get: function get() {
-	    return _sagaHelpers.takeEvery;
-	  }
-	});
-	Object.defineProperty(exports, 'takeLatest', {
-	  enumerable: true,
-	  get: function get() {
-	    return _sagaHelpers.takeLatest;
-	  }
-	});
-
-	var _utils = __webpack_require__(1);
-
-	Object.defineProperty(exports, 'delay', {
-	  enumerable: true,
-	  get: function get() {
-	    return _utils.delay;
-	  }
-	});
-	Object.defineProperty(exports, 'CANCEL', {
-	  enumerable: true,
-	  get: function get() {
-	    return _utils.CANCEL;
-	  }
-	});
-
 	var _middleware = __webpack_require__(8);
 
 	var _middleware2 = _interopRequireDefault(_middleware);
+
+	var _runSaga = __webpack_require__(9);
+
+	var _channel = __webpack_require__(2);
+
+	var _buffers = __webpack_require__(4);
+
+	var _sagaHelpers = __webpack_require__(10);
+
+	var _utils = __webpack_require__(1);
 
 	var _effects = __webpack_require__(6);
 
@@ -147,6 +88,26 @@ return /******/ (function(modules) { // webpackBootstrap
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	exports.default = _middleware2.default;
+
+	// IE8-compatible-fix: fix upstream Babel export-from bug(?)
+
+	exports.runSaga = _runSaga.runSaga;
+	// IE8-compatible-fix: fix upstream Babel export-from bug(?)
+
+	exports.END = _channel.END;
+	exports.eventChannel = _channel.eventChannel;
+	exports.channel = _channel.channel;
+	// IE8-compatible-fix: fix upstream Babel export-from bug(?)
+
+	exports.buffers = _buffers.buffers;
+	// IE8-compatible-fix: fix upstream Babel export-from bug(?)
+
+	exports.takeEvery = _sagaHelpers.takeEvery;
+	exports.takeLatest = _sagaHelpers.takeLatest;
+	// IE8-compatible-fix: fix upstream Babel export-from bug(?)
+
+	exports.delay = _utils.delay;
+	exports.CANCEL = _utils.CANCEL;
 	exports.effects = effects;
 	exports.utils = utils;
 
@@ -475,10 +436,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  return { take: take, put: put, close: close,
-	    get __takers__() {
+	    // get __takers__() { return takers },
+	    // IE8-compatible-fix: IE 8 doesn't support getter of Object.defineProperty().
+	    // This is API-incompatible change.
+	    __takers__: function __takers__() {
 	      return takers;
 	    },
-	    get __closed__() {
+
+	    // get __closed__() { return closed }
+	    // IE8-compatible-fix: IE 8 doesn't support getter of Object.defineProperty().
+	    // This is API-incompatible change.
+	    __closed__: function __closed__() {
 	      return closed;
 	    }
 	  };
@@ -508,7 +476,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return {
 	    take: chan.take,
 	    close: function close() {
-	      if (!chan.__closed__) {
+	      // if(!chan.__closed__) {
+	      // IE8-compatible-fix: API-incompatible change
+	      var chanClosed = typeof chan.__closed__ === 'function' ? chan.__closed__() : chan.__closed__;
+	      if (!chanClosed) {
 	        chan.close();
 	        unsubscribe();
 	      }
@@ -565,6 +536,43 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var _ref;
 
 	  return _ref = {}, _defineProperty(_ref, IO, true), _defineProperty(_ref, type, payload), _ref;
+	};
+
+	// IE8-compatible-fix: see comments at the end.
+	var asEffect = exports.asEffect = {
+	  take: function take(effect) {
+	    return effect && effect[IO] && effect[TAKE];
+	  },
+	  put: function put(effect) {
+	    return effect && effect[IO] && effect[PUT];
+	  },
+	  race: function race(effect) {
+	    return effect && effect[IO] && effect[RACE];
+	  },
+	  call: function call(effect) {
+	    return effect && effect[IO] && effect[CALL];
+	  },
+	  cps: function cps(effect) {
+	    return effect && effect[IO] && effect[CPS];
+	  },
+	  fork: function fork(effect) {
+	    return effect && effect[IO] && effect[FORK];
+	  },
+	  join: function join(effect) {
+	    return effect && effect[IO] && effect[JOIN];
+	  },
+	  cancel: function cancel(effect) {
+	    return effect && effect[IO] && effect[CANCEL];
+	  },
+	  select: function select(effect) {
+	    return effect && effect[IO] && effect[SELECT];
+	  },
+	  actionChannel: function actionChannel(effect) {
+	    return effect && effect[IO] && effect[ACTION_CHANNEL];
+	  },
+	  cancelled: function cancelled(effect) {
+	    return effect && effect[IO] && effect[CANCELLED];
+	  }
 	};
 
 	function take(channel, pattern) {
@@ -734,41 +742,25 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return effect(CANCELLED, {});
 	}
 
-	var asEffect = exports.asEffect = {
-	  take: function take(effect) {
-	    return effect && effect[IO] && effect[TAKE];
-	  },
-	  put: function put(effect) {
-	    return effect && effect[IO] && effect[PUT];
-	  },
-	  race: function race(effect) {
-	    return effect && effect[IO] && effect[RACE];
-	  },
-	  call: function call(effect) {
-	    return effect && effect[IO] && effect[CALL];
-	  },
-	  cps: function cps(effect) {
-	    return effect && effect[IO] && effect[CPS];
-	  },
-	  fork: function fork(effect) {
-	    return effect && effect[IO] && effect[FORK];
-	  },
-	  join: function join(effect) {
-	    return effect && effect[IO] && effect[JOIN];
-	  },
-	  cancel: function cancel(effect) {
-	    return effect && effect[IO] && effect[CANCEL];
-	  },
-	  select: function select(effect) {
-	    return effect && effect[IO] && effect[SELECT];
-	  },
-	  actionChannel: function actionChannel(effect) {
-	    return effect && effect[IO] && effect[ACTION_CHANNEL];
-	  },
-	  cancelled: function cancelled(effect) {
-	    return effect && effect[IO] && effect[CANCELLED];
-	  }
-	};
+	// IE8-compatible-fix: Babel transpile these to named functions ({ take: function take() {...}, ... })
+	// These are completely valid in modern browsers. However, in IE8, they override the functions with the
+	// same name above, causing all sorts of errors. To maintain IE8 compatibility, move this part before
+	// those functions.
+	/*
+	export const asEffect = {
+	  take    : effect => effect && effect[IO] && effect[TAKE],
+	  put     : effect => effect && effect[IO] && effect[PUT],
+	  race    : effect => effect && effect[IO] && effect[RACE],
+	  call    : effect => effect && effect[IO] && effect[CALL],
+	  cps     : effect => effect && effect[IO] && effect[CPS],
+	  fork    : effect => effect && effect[IO] && effect[FORK],
+	  join    : effect => effect && effect[IO] && effect[JOIN],
+	  cancel  : effect => effect && effect[IO] && effect[CANCEL],
+	  select  : effect => effect && effect[IO] && effect[SELECT],
+	  actionChannel : effect => effect && effect[IO] && effect[ACTION_CHANNEL],
+	  cancelled  : effect => effect && effect[IO] && effect[CANCELLED]
+	}
+	*/
 
 /***/ },
 /* 4 */
@@ -865,8 +857,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	var _buffers = __webpack_require__(4);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	function _defineEnumerableProperties(obj, descs) { for (var key in descs) { var desc = descs[key]; desc.configurable = desc.enumerable = true; if ("value" in desc) desc.writable = true; Object.defineProperty(obj, key, desc); } return obj; }
 
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -993,13 +983,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  } : arguments[1];
 	  var dispatch = arguments.length <= 2 || arguments[2] === undefined ? _utils.noop : arguments[2];
 	  var getState = arguments.length <= 3 || arguments[3] === undefined ? _utils.noop : arguments[3];
-	  var monitor = arguments[4];
+	  var options = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
 	  var parentEffectId = arguments.length <= 5 || arguments[5] === undefined ? 0 : arguments[5];
 	  var name = arguments.length <= 6 || arguments[6] === undefined ? 'anonymous' : arguments[6];
 	  var cont = arguments[7];
 
 	  (0, _utils.check)(iterator, _utils.is.iterator, NOT_ITERATOR_ERROR);
 
+	  var sagaMonitor = options.sagaMonitor;
+	  var logger = options.logger;
+
+	  var log = logger || _utils.log;
 	  var stdChannel = (0, _channel.eventChannel)(subscribe);
 	  /**
 	    Tracks the current effect cancellation
@@ -1029,9 +1023,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  /**
 	    This may be called by a parent generator to trigger/propagate cancellation
 	    cancel all pending tasks (including the main task), then end the current task.
-	      Cancellation propagates down to the whole execution tree holded by this Parent task
+	     Cancellation propagates down to the whole execution tree holded by this Parent task
 	    It's also propagated to all joiners of this task and their execution tree/joiners
-	      Cancellation is noop for terminated/Cancelled tasks tasks
+	     Cancellation is noop for terminated/Cancelled tasks tasks
 	  **/
 	  function cancel() {
 	    /**
@@ -1081,7 +1075,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        /**
 	          getting TASK_CANCEL autoamtically cancels the main task
 	          We can get this value here
-	            - By cancelling the parent task manually
+	           - By cancelling the parent task manually
 	          - By joining a Cancelled task
 	        **/
 	        mainTask.isCancelled = true;
@@ -1112,7 +1106,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    } catch (error) {
 	      if (mainTask.isCancelled) {
-	        (0, _utils.log)('error', 'uncaught at ' + name, error.message);
+	        log('error', 'uncaught at ' + name, error.message);
 	      }
 	      mainTask.isMainRunning = false;
 	      mainTask.cont(error, true);
@@ -1124,7 +1118,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    stdChannel.close();
 	    if (!isErr) {
 	      if (result === TASK_CANCEL && isDev) {
-	        (0, _utils.log)('info', name + ' has been cancelled', '');
+	        log('info', name + ' has been cancelled', '');
 	      }
 	      iterator._result = result;
 	      iterator._deferredEnd && iterator._deferredEnd.resolve(result);
@@ -1133,7 +1127,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        result.sagaStack = 'at ' + name + ' \n ' + (result.sagaStack || result.stack);
 	      }
 	      if (!task.cont) {
-	        (0, _utils.log)('error', 'uncaught', result.sagaStack || result.stack);
+	        log('error', 'uncaught', result.sagaStack || result.stack);
 	      }
 	      iterator._error = result;
 	      iterator._isAborted = true;
@@ -1151,7 +1145,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var cb = arguments[3];
 
 	    var effectId = nextEffectId();
-	    monitor && monitor.effectTriggered({ effectId: effectId, parentEffectId: parentEffectId, label: label, effect: effect });
+	    sagaMonitor && sagaMonitor.effectTriggered({ effectId: effectId, parentEffectId: parentEffectId, label: label, effect: effect });
 
 	    /**
 	      completion callback and cancel callback are mutually exclusive
@@ -1168,8 +1162,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      effectSettled = true;
 	      cb.cancel = _utils.noop; // defensive measure
-	      if (monitor) {
-	        isErr ? monitor.effectRejected(effectId, res) : monitor.effectResolved(effectId, res);
+	      if (sagaMonitor) {
+	        isErr ? sagaMonitor.effectRejected(effectId, res) : sagaMonitor.effectResolved(effectId, res);
 	      }
 
 	      cb(res, isErr);
@@ -1193,22 +1187,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	      try {
 	        currCb.cancel();
 	      } catch (err) {
-	        (0, _utils.log)('error', 'uncaught at ' + name, err.message);
+	        log('error', 'uncaught at ' + name, err.message);
 	      }
 	      currCb.cancel = _utils.noop; // defensive measure
 
-	      monitor && monitor.effectCancelled(effectId);
+	      sagaMonitor && sagaMonitor.effectCancelled(effectId);
 	    };
 
 	    /**
 	      each effect runner must attach its own logic of cancellation to the provided callback
 	      it allows this generator to propagate cancellation downward.
-	        ATTENTION! effect runners must setup the cancel logic by setting cb.cancel = [cancelMethod]
+	       ATTENTION! effect runners must setup the cancel logic by setting cb.cancel = [cancelMethod]
 	      And the setup must occur before calling the callback
-	        This is a sort of inversion of control: called async functions are responsible
+	       This is a sort of inversion of control: called async functions are responsible
 	      of completing the flow by calling the provided continuation; while caller functions
 	      are responsible for aborting the current flow by calling the attached cancel function
-	        Library users can attach their own cancellation logic to promises by defining a
+	       Library users can attach their own cancellation logic to promises by defining a
 	      promise[CANCEL] method in their returned promises
 	      ATTENTION! calling cancel must have no effect on an already completed or cancelled effect
 	    **/
@@ -1233,7 +1227,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  function resolveIterator(iterator, effectId, name, cb) {
-	    proc(iterator, subscribe, dispatch, getState, monitor, effectId, name, cb);
+	    proc(iterator, subscribe, dispatch, getState, options, effectId, name, cb);
 	  }
 
 	  function runTakeEffect(_ref, cb) {
@@ -1366,7 +1360,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	    _asap2.default.suspend();
-	    var task = proc(_iterator, subscribe, dispatch, getState, monitor, effectId, fn.name, detached ? null : _utils.noop);
+	    var task = proc(_iterator, subscribe, dispatch, getState, options, effectId, fn.name, detached ? null : _utils.noop);
 	    if (!detached) {
 	      if (_iterator._isRunning) {
 	        taskQueue.addTask(task);
@@ -1514,10 +1508,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  function newTask(id, name, iterator, cont) {
-	    var _done, _ref8, _mutatorMap;
+	    var _ref8;
 
 	    iterator._deferredEnd = null;
-	    return _ref8 = {}, _defineProperty(_ref8, _utils.TASK, true), _defineProperty(_ref8, 'id', id), _defineProperty(_ref8, 'name', name), _done = 'done', _mutatorMap = {}, _mutatorMap[_done] = _mutatorMap[_done] || {}, _mutatorMap[_done].get = function () {
+	    return _ref8 = {}, _defineProperty(_ref8, _utils.TASK, true), _defineProperty(_ref8, 'id', id), _defineProperty(_ref8, 'name', name), _defineProperty(_ref8, 'done', function done() {
 	      if (iterator._deferredEnd) {
 	        return iterator._deferredEnd.promise;
 	      } else {
@@ -1528,7 +1522,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	        return def.promise;
 	      }
-	    }, _defineProperty(_ref8, 'cont', cont), _defineProperty(_ref8, 'joiners', []), _defineProperty(_ref8, 'cancel', cancel), _defineProperty(_ref8, 'isRunning', function isRunning() {
+	    }), _defineProperty(_ref8, 'cont', cont), _defineProperty(_ref8, 'joiners', []), _defineProperty(_ref8, 'cancel', cancel), _defineProperty(_ref8, 'isRunning', function isRunning() {
 	      return iterator._isRunning;
 	    }), _defineProperty(_ref8, 'isCancelled', function isCancelled() {
 	      return iterator._isCancelled;
@@ -1538,7 +1532,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return iterator._result;
 	    }), _defineProperty(_ref8, 'error', function error() {
 	      return iterator._error;
-	    }), _defineEnumerableProperties(_ref8, _mutatorMap), _ref8;
+	    }), _ref8;
 	  }
 	}
 
@@ -1551,93 +1545,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.cancelled = exports.actionChannel = exports.select = exports.cancel = exports.join = exports.spawn = exports.fork = exports.cps = exports.apply = exports.call = exports.race = exports.put = exports.takem = exports.take = undefined;
 
 	var _io = __webpack_require__(3);
 
-	Object.defineProperty(exports, 'take', {
-	  enumerable: true,
-	  get: function get() {
-	    return _io.take;
-	  }
-	});
-	Object.defineProperty(exports, 'takem', {
-	  enumerable: true,
-	  get: function get() {
-	    return _io.takem;
-	  }
-	});
-	Object.defineProperty(exports, 'put', {
-	  enumerable: true,
-	  get: function get() {
-	    return _io.put;
-	  }
-	});
-	Object.defineProperty(exports, 'race', {
-	  enumerable: true,
-	  get: function get() {
-	    return _io.race;
-	  }
-	});
-	Object.defineProperty(exports, 'call', {
-	  enumerable: true,
-	  get: function get() {
-	    return _io.call;
-	  }
-	});
-	Object.defineProperty(exports, 'apply', {
-	  enumerable: true,
-	  get: function get() {
-	    return _io.apply;
-	  }
-	});
-	Object.defineProperty(exports, 'cps', {
-	  enumerable: true,
-	  get: function get() {
-	    return _io.cps;
-	  }
-	});
-	Object.defineProperty(exports, 'fork', {
-	  enumerable: true,
-	  get: function get() {
-	    return _io.fork;
-	  }
-	});
-	Object.defineProperty(exports, 'spawn', {
-	  enumerable: true,
-	  get: function get() {
-	    return _io.spawn;
-	  }
-	});
-	Object.defineProperty(exports, 'join', {
-	  enumerable: true,
-	  get: function get() {
-	    return _io.join;
-	  }
-	});
-	Object.defineProperty(exports, 'cancel', {
-	  enumerable: true,
-	  get: function get() {
-	    return _io.cancel;
-	  }
-	});
-	Object.defineProperty(exports, 'select', {
-	  enumerable: true,
-	  get: function get() {
-	    return _io.select;
-	  }
-	});
-	Object.defineProperty(exports, 'actionChannel', {
-	  enumerable: true,
-	  get: function get() {
-	    return _io.actionChannel;
-	  }
-	});
-	Object.defineProperty(exports, 'cancelled', {
-	  enumerable: true,
-	  get: function get() {
-	    return _io.cancelled;
-	  }
-	});
+	exports.take = _io.take;
+	exports.takem = _io.takem;
+	exports.put = _io.put;
+	exports.race = _io.race;
+	exports.call = _io.call;
+	exports.apply = _io.apply;
+	exports.cps = _io.cps;
+	exports.fork = _io.fork;
+	exports.spawn = _io.spawn;
+	exports.join = _io.join;
+	exports.cancel = _io.cancel;
+	exports.select = _io.select;
+	exports.actionChannel = _io.actionChannel;
+	exports.cancelled = _io.cancelled; // IE8-compatible-fix: fix upstream Babel export-from bug(?)
 
 /***/ },
 /* 7 */
@@ -1707,6 +1632,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }
 
+	  if (options.logger && !_utils.is.func(options.logger)) {
+	    throw new Error('`options.logger` passed to the Saga middleware is not a function!');
+	  }
+
 	  function sagaMiddleware(_ref) {
 	    var getState = _ref.getState;
 	    var dispatch = _ref.dispatch;
@@ -1719,7 +1648,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        args[_key - 1] = arguments[_key];
 	      }
 
-	      return (0, _proc2.default)(saga.apply(undefined, args), sagaEmitter.subscribe, dispatch, getState, options.sagaMonitor, 0, saga.name);
+	      return (0, _proc2.default)(saga.apply(undefined, args), sagaEmitter.subscribe, dispatch, getState, options, 0, saga.name);
 	    }
 
 	    return function (next) {
@@ -1763,15 +1692,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function runSaga(iterator, _ref, monitor) {
+	function runSaga(iterator, _ref) {
 	  var subscribe = _ref.subscribe;
 	  var dispatch = _ref.dispatch;
 	  var getState = _ref.getState;
+	  var sagaMonitor = _ref.sagaMonitor;
+	  var logger = _ref.logger;
 
 
 	  (0, _utils.check)(iterator, _utils.is.iterator, "runSaga must be called on an iterator");
 
-	  return (0, _proc2.default)(iterator, subscribe, dispatch, getState, monitor);
+	  return (0, _proc2.default)(iterator, subscribe, dispatch, getState, { sagaMonitor: sagaMonitor, logger: logger });
 	}
 
 /***/ },
@@ -1913,54 +1844,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+	exports.asEffect = exports.createMockTask = exports.arrayOfDeffered = exports.deferred = exports.is = exports.noop = exports.TASK = undefined;
 
 	var _utils = __webpack_require__(1);
 
-	Object.defineProperty(exports, 'TASK', {
-	  enumerable: true,
-	  get: function get() {
-	    return _utils.TASK;
-	  }
-	});
-	Object.defineProperty(exports, 'noop', {
-	  enumerable: true,
-	  get: function get() {
-	    return _utils.noop;
-	  }
-	});
-	Object.defineProperty(exports, 'is', {
-	  enumerable: true,
-	  get: function get() {
-	    return _utils.is;
-	  }
-	});
-	Object.defineProperty(exports, 'deferred', {
-	  enumerable: true,
-	  get: function get() {
-	    return _utils.deferred;
-	  }
-	});
-	Object.defineProperty(exports, 'arrayOfDeffered', {
-	  enumerable: true,
-	  get: function get() {
-	    return _utils.arrayOfDeffered;
-	  }
-	});
-	Object.defineProperty(exports, 'createMockTask', {
-	  enumerable: true,
-	  get: function get() {
-	    return _utils.createMockTask;
-	  }
-	});
-
 	var _io = __webpack_require__(3);
 
-	Object.defineProperty(exports, 'asEffect', {
-	  enumerable: true,
-	  get: function get() {
-	    return _io.asEffect;
-	  }
-	});
+	exports.TASK = _utils.TASK;
+	exports.noop = _utils.noop;
+	exports.is = _utils.is;
+	exports.deferred = _utils.deferred;
+	exports.arrayOfDeffered = _utils.arrayOfDeffered;
+	exports.createMockTask = _utils.createMockTask;
+	// IE8-compatible-fix: fix upstream Babel export-from bug(?)
+	// IE8-compatible-fix: fix upstream Babel export-from bug(?)
+
+	exports.asEffect = _io.asEffect;
 
 /***/ }
 /******/ ])

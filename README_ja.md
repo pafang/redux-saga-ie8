@@ -1,6 +1,9 @@
-# redux-saga
+# redux-saga-ie8
 
-[![Join the chat at https://gitter.im/yelouafi/redux-saga](https://badges.gitter.im/yelouafi/redux-saga.svg)](https://gitter.im/yelouafi/redux-saga?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![npm version](https://img.shields.io/npm/v/redux-saga.svg?style=flat-square)](https://www.npmjs.com/package/redux-saga)
+(This is IE8-compatible port of [redux-saga](https://github.com/yelouafi/redux-saga), with API-incompatible changes. Notice that this is NOT a
+drop-in replacement for `redux-saga`! See document for details.)
+
+[![Join the chat at https://gitter.im/yelouafi/redux-saga](https://badges.gitter.im/yelouafi/redux-saga.svg)](https://gitter.im/yelouafi/redux-saga?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![npm version](https://img.shields.io/npm/v/redux-saga-ie8.svg?style=flat-square)](https://www.npmjs.com/package/redux-saga-ie8)
 
 Redux アプリケーションのための副作用ミドルウェア（非同期 Action）。`redux-thunk` ミドルウェアによって処理される Thunk（サンク） を送り出す代わりに、
 副作用を伴うすべてのロジックを１箇所にまとめる **Saga（サガ、サーガ）** を用意します。
@@ -10,24 +13,24 @@ Redux アプリケーションのための副作用ミドルウェア（非同�
 - Reducer は Action ごとの状態遷移を処理する責任を持つ
 - Saga は複雑で非同期的な操作のオーケストレーションに責任を持つ
 
-Saga は Generator 関数を使って作成されます。もし馴染みがないようであれば[リンク集](http://yelouafi.github.io/redux-saga/docs/ExternalResources.html)を参考にしてみてください。
+Saga は Generator 関数を使って作成されます。もし馴染みがないようであれば[リンク集](http://rockallite.github.io/redux-saga-ie8/docs/ExternalResources.html)を参考にしてみてください。
 
 Action Creator を呼び出すたびに実行される Thunk とは異なり、Saga が実行されるのはアプリケーション起動時の1回だけです（ただし、最初に起動する Saga が他の Saga を動的に起動することがあります）。それらはバックグラウンドで実行されるプロセスのように見えます。Saga は Store に送り出される Action を監視して、その Action にもとづいて何をするか決定します: AJAX リクエストのような非同期呼び出しの開始、他の Action の送出、 他の Saga の動的な起動など。
 
-`redux-saga` では上記のようなタスクを **作用（Effects）** を生成することによって実現します。作用は `redux-saga` ミドルウェアによって実行される手順が含まれた単純な JavaScript のオブジェクトです。例えるなら、Redux の Action が Store によって実行される手順が含まれているオブジェクトであることに似ています。`redux-saga` は、非同期関数を呼び出したり、Store に Action を送り出したり、バックグラウンドのタスクを起動したり、特定の条件を満たす Action を待ち受けたり、様々なタスクに応じた **作用を生成する関数（Effect Creator）** を提供します。
+`redux-saga-ie8` では上記のようなタスクを **作用（Effects）** を生成することによって実現します。作用は `redux-saga-ie8` ミドルウェアによって実行される手順が含まれた単純な JavaScript のオブジェクトです。例えるなら、Redux の Action が Store によって実行される手順が含まれているオブジェクトであることに似ています。`redux-saga-ie8` は、非同期関数を呼び出したり、Store に Action を送り出したり、バックグラウンドのタスクを起動したり、特定の条件を満たす Action を待ち受けたり、様々なタスクに応じた **作用を生成する関数（Effect Creator）** を提供します。
 
-Generator によって `redux-saga` で非同期コードをシンプルな同期スタイルで書き下すことができます。`async/await` 関数によってできることに似ていますが、Generator は `async` 関数では困難ないくつかのことを可能にします。
+Generator によって `redux-saga-ie8` で非同期コードをシンプルな同期スタイルで書き下すことができます。`async/await` 関数によってできることに似ていますが、Generator は `async` 関数では困難ないくつかのことを可能にします。
 
 Saga がプレーンなオブジェクトを生成するということは、イテレータを回すことで生成されるオブジェクトを単純に同値チェックすればよいだけになり、Generator 内部のすべてのロジックをテストしやすくします。
 
-さらに `redux-saga` で開始したタスクは手動・自動（他の作用と競争させてたり）を問わずいつでもキャンセル可能です。
+さらに `redux-saga-ie8` で開始したタスクは手動・自動（他の作用と競争させてたり）を問わずいつでもキャンセル可能です。
 
 # はじめよう
 
 ## インストール
 
 ```sh
-$ npm install --save redux-saga
+$ npm install --save redux-saga-ie8
 ```
 
 別の方法として、UMD ビルドを HTML ページの `<script>` タグで直接使うこともできます。詳しくは[こちら](#ブラウザで-umd-ビルドを使用する).
@@ -53,8 +56,8 @@ class UserComponent extends React.Component {
 #### `sagas.js`
 
 ```javascript
-import { takeEvery, takeLatest } from 'redux-saga'
-import { call, put } from 'redux-saga/effects'
+import { takeEvery, takeLatest } from 'redux-saga-ie8'
+import { call, put } from 'redux-saga-ie8/effects'
 import Api from '...'
 
 // ワーカー Saga: USER_FETCH_REQUESTED Action によって起動する
@@ -87,13 +90,13 @@ function* mySaga() {
 }
 ```
 
-定義した Saga を実行するには `redux-saga` ミドルウェアを使って Redux の Store と接続する必要があります。
+定義した Saga を実行するには `redux-saga-ie8` ミドルウェアを使って Redux の Store と接続する必要があります。
 
 #### `main.js`
 
 ```javascript
 import { createStore, applyMiddleware } from 'redux'
-import createSagaMiddleware from 'redux-saga'
+import createSagaMiddleware from 'redux-saga-ie8'
 
 import reducer from './reducers'
 import mySaga from './sagas'
@@ -115,46 +118,46 @@ sagaMiddleware.run(mySaga)
 
 # ドキュメント
 
-- [イントロダクション](http://yelouafi.github.io/redux-saga/docs/introduction/index.html)
-- [基本コンセプト](http://yelouafi.github.io/redux-saga/docs/basics/index.html)
-- [応用コンセプト](http://yelouafi.github.io/redux-saga/docs/advanced/index.html)
-- [レシピ](http://yelouafi.github.io/redux-saga/docs/recipes/index.html)
-- [外部リソース](http://yelouafi.github.io/redux-saga/docs/ExternalResources.html)
-- [トラブルシューティング](http://yelouafi.github.io/redux-saga/docs/Troubleshooting.html)
-- [用語集](http://yelouafi.github.io/redux-saga/docs/Glossary.html)
-- [API リファレンス](http://yelouafi.github.io/redux-saga/docs/api/index.html)
+- [イントロダクション](http://rockallite.github.io/redux-saga-ie8/docs/introduction/index.html)
+- [基本コンセプト](http://rockallite.github.io/redux-saga-ie8/docs/basics/index.html)
+- [応用コンセプト](http://rockallite.github.io/redux-saga-ie8/docs/advanced/index.html)
+- [レシピ](http://rockallite.github.io/redux-saga-ie8/docs/recipes/index.html)
+- [外部リソース](http://rockallite.github.io/redux-saga-ie8/docs/ExternalResources.html)
+- [トラブルシューティング](http://rockallite.github.io/redux-saga-ie8/docs/Troubleshooting.html)
+- [用語集](http://rockallite.github.io/redux-saga-ie8/docs/Glossary.html)
+- [API リファレンス](http://rockallite.github.io/redux-saga-ie8/docs/api/index.html)
 
-@superRaytin による[中国語のドキュメント](https://github.com/superRaytin/redux-saga-in-chinese)もあります。
+@superRaytin による[中国語のドキュメント](https://github.com/superRaytin/redux-saga-in-chinese)もあります。(Original `redux-saga`, not `redux-saga-ie8`)
 
 
 # ブラウザで umd ビルドを使用する
 
-`dist/` ディレクトリには `redux-saga` の **umd** ビルドもあります。
-umd ビルドを使うときは window オブジェクトに `ReduxSaga` という名前で `redux-saga` が提供されます。
+`dist/` ディレクトリには `redux-saga-ie8` の **umd** ビルドもあります。
+umd ビルドを使うときは window オブジェクトに `ReduxSaga` という名前で `redux-saga-ie8` が提供されます。
 
 umd バージョンは webpack や browserify を使わない場合には便利です。[npmcdn](npmcdn.com) から直接利用できます。
 
 以下のビルドが利用可能です:
 
-- [https://npmcdn.com/redux-saga/dist/redux-saga.js](https://npmcdn.com/redux-saga/dist/redux-saga.js)  
-- [https://npmcdn.com/redux-saga/dist/redux-saga.min.js](https://npmcdn.com/redux-saga/dist/redux-saga.min.js)
+- [https://npmcdn.com/redux-saga-ie8/dist/redux-saga-ie8.js](https://npmcdn.com/redux-saga-ie8/dist/redux-saga-ie8.js)  
+- [https://npmcdn.com/redux-saga-ie8/dist/redux-saga-ie8.min.js](https://npmcdn.com/redux-saga-ie8/dist/redux-saga-ie8.min.js)
 
 **重要!** ターゲットのブラウザが *ES2015 の Generator* をサポートしていない場合、[*babel*](https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.25/browser-polyfill.min.js) のような有効な polyfill
 を提供しなければなりません。
 
-polyfill は **redux-saga** の前にインポートされなければなりません。
+polyfill は **redux-saga-ie8** の前にインポートされなければなりません。
 
 ```javascript
 import 'babel-polyfill'
 // この後に
-import sagaMiddleware from 'redux-saga'
+import sagaMiddleware from 'redux-saga-ie8'
 ```
 
 # サンプルをソースコードからビルドする
 
 ```sh
-$ git clone https://github.com/yelouafi/redux-saga.git
-$ cd redux-saga
+$ git clone https://github.com/rockallite/redux-saga-ie8.git
+$ cd redux-saga-ie8
 $ npm install
 $ npm test
 ```

@@ -26,7 +26,9 @@ test('action channel', assert => {
     }
   }
 
-  middleware.run(saga).done.then(() => {
+  // middleware.run(saga).done.then(() => {
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  middleware.run(saga).done().then(() => {
     assert.deepEqual(actual, [1,2,3],
       "Sagas must take consecutive actions dispatched synchronously on an action channel even if it performs blocking calls"
     );
@@ -77,7 +79,9 @@ test('channel: watcher + max workers', assert => {
 
   }
 
-  middleware.run(saga).done.then(() => {
+  // middleware.run(saga).done.then(() => {
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  middleware.run(saga).done().then(() => {
     assert.deepEqual(actual, [ [1,1], [2,2], [3,3], [1,4], [2,5], [3,6], [2,7], [3,8], [2,9], [3,10]],
       "Saga must dispatch to free workers via channel"
     );

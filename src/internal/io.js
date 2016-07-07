@@ -15,6 +15,21 @@ const CANCELLED  = 'CANCELLED'
 
 const effect = (type, payload) => ({[IO]: true, [type]: payload})
 
+// IE8-compatible-fix: see comments at the end.
+export const asEffect = {
+  take    : effect => effect && effect[IO] && effect[TAKE],
+  put     : effect => effect && effect[IO] && effect[PUT],
+  race    : effect => effect && effect[IO] && effect[RACE],
+  call    : effect => effect && effect[IO] && effect[CALL],
+  cps     : effect => effect && effect[IO] && effect[CPS],
+  fork    : effect => effect && effect[IO] && effect[FORK],
+  join    : effect => effect && effect[IO] && effect[JOIN],
+  cancel  : effect => effect && effect[IO] && effect[CANCEL],
+  select  : effect => effect && effect[IO] && effect[SELECT],
+  actionChannel : effect => effect && effect[IO] && effect[ACTION_CHANNEL],
+  cancelled  : effect => effect && effect[IO] && effect[CANCELLED]
+}
+
 export function take(channel, pattern) {
   if(arguments.length >= 2) {
     check(channel, is.notUndef, 'take(channel, pattern): channel is undefined')
@@ -151,6 +166,11 @@ export function cancelled() {
   return effect(CANCELLED, {})
 }
 
+// IE8-compatible-fix: Babel transpile these to named functions ({ take: function take() {...}, ... })
+// These are completely valid in modern browsers. However, in IE8, they override the functions with the
+// same name above, causing all sorts of errors. To maintain IE8 compatibility, move this part before 
+// those functions.
+/*
 export const asEffect = {
   take    : effect => effect && effect[IO] && effect[TAKE],
   put     : effect => effect && effect[IO] && effect[PUT],
@@ -164,3 +184,4 @@ export const asEffect = {
   actionChannel : effect => effect && effect[IO] && effect[ACTION_CHANNEL],
   cancelled  : effect => effect && effect[IO] && effect[CANCELLED]
 }
+*/

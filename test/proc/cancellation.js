@@ -44,7 +44,9 @@ test('proc cancellation: call effect', assert => {
     actual.push(v)
     task.cancel()
   })
-  task.done.catch(err => assert.fail(err))
+  // task.done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  task.done().catch(err => assert.fail(err))
 
   const expected = ['start', 'subroutine start',
     'cancel', 'subroutine cancelled', 'cancelled']
@@ -129,7 +131,9 @@ test('proc cancellation: forked children', assert => {
 
   const task = proc(main())
   cancelDef.promise.then(() => task.cancel())
-  task.done.catch(err => assert.fail(err))
+  // task.done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  task.done().catch(err => assert.fail(err))
 
   const expected = [
     'childA resolve', 'root resolve', 'leaf 0 resolve', 'childB resolve',
@@ -179,7 +183,9 @@ test('proc cancellation: take effect', assert => {
     actual.push(v)
     task.cancel()
   })
-  task.done.catch(err => assert.fail(err))
+  // task.done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  task.done().catch(err => assert.fail(err))
 
   const expected = ['start', 'cancel', 'cancelled'];
 
@@ -252,7 +258,9 @@ test('proc cancellation: join effect (joining from a different task)', assert =>
   }
 
   const task = proc(main())
-  task.done.catch(err => assert.fail(err))
+  // task.done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  task.done().catch(err => assert.fail(err))
 
   /**
     Breaking change in 10.0:
@@ -307,7 +315,9 @@ test('proc cancellation: join effect (join from the same task\'s parent)', asser
     actual.push(v)
     task.cancel()
   })
-  task.done.catch(err => assert.fail(err))
+  // task.done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  task.done().catch(err => assert.fail(err))
 
   /**
     Breaking change in 10.0: Since now attached forks are cancelled when their parent is cancelled
@@ -382,7 +392,9 @@ test('proc cancellation: parallel effect', assert => {
     actual.push(v)
     task.cancel()
   })
-  task.done.catch(err => assert.fail(err))
+  // task.done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  task.done().catch(err => assert.fail(err))
 
   const expected = ['start',
     'subroutine 1 start', 'subroutine 2 start',
@@ -450,7 +462,9 @@ test('proc cancellation: race effect', assert => {
     actual.push(v)
     task.cancel()
   })
-  task.done.catch(err => assert.fail(err))
+  // task.done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  task.done().catch(err => assert.fail(err))
 
   const expected = ['start',
     'subroutine 1 start', 'subroutine 2 start',
@@ -504,7 +518,9 @@ test('proc cancellation: automatic parallel effect cancellation', assert => {
     }
   }
 
-  proc(genFn()).done.catch(err => assert.fail(err))
+  // proc(genFn()).done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  proc(genFn()).done().catch(err => assert.fail(err))
   const expected = ['subtask_1', 'subtask_2',
     'subtask 2 cancelled', 'caught subtask_1 rejection']
 
@@ -575,7 +591,9 @@ test('proc cancellation: automatic race competitor cancellation', assert => {
     ]
   }
 
-  proc(genFn()).done.catch(err => assert.fail(err))
+  // proc(genFn()).done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  proc(genFn()).done().catch(err => assert.fail(err))
   const expected = ['winner_1', 'loser_1', 'parallel_1', 'winner_2',
     'loser subtask cancelled', 'parallel_2']
 
@@ -622,7 +640,9 @@ test('proc cancellation:  manual task cancellation', assert => {
     yield io.cancel(task)
   }
 
-  proc(genFn()).done.catch(err => assert.fail(err))
+  // proc(genFn()).done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  proc(genFn()).done().catch(err => assert.fail(err))
   const expected = ['signIn', 'expire_1', 'expire_2', 'signOut', 'task cancelled']
 
   setTimeout(() => {
@@ -695,7 +715,9 @@ test('proc cancellation: nested task cancellation', assert => {
     yield io.cancel(task)
   }
 
-  proc(genFn()).done.catch(err => assert.fail(err))
+  // proc(genFn()).done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  proc(genFn()).done().catch(err => assert.fail(err))
   const expected = ['start', 'subtask_1',
     'nested_task_1_1', 'nested_task_2_1', 'stop',
     'nested task 1 cancelled', 'nested task 2 cancelled',
@@ -757,7 +779,9 @@ test('proc cancellation: nested forked task cancellation', assert => {
     yield io.cancel(task)
   }
 
-  proc(genFn()).done.catch(err => assert.fail(err))
+  // proc(genFn()).done.catch(err => assert.fail(err))
+  // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+  proc(genFn()).done().catch(err => assert.fail(err))
   const expected = [
     'start', 'subtask_1', 'nested_task_1',
     'stop',

@@ -77,7 +77,9 @@ test('buffered channel', assert => {
   let log = []
   const taker = () => (ac) => log.push(ac)
 
-  const state = () => [chan.__closed__, chan.__takers__, buffer, log]
+  // const state = () => [chan.__closed__, chan.__takers__, buffer, log]
+  // API-incompatible change: for IE8 compatibility. Use property `__closed__` and `__takers__` in original redux-saga
+  const state = () => [chan.__closed__(), chan.__takers__(), buffer, log]
 
   var t1 = taker()
   chan.take(t1)

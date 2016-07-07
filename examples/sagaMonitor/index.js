@@ -69,7 +69,9 @@ function resolveEffect(effectId, result) {
   const effect = effectsById[effectId]
 
   if(is.task(result)) {
-    result.done.then(
+    // result.done.then(
+    // API-incompatible change: for IE8 compatibility. Use property `done` in original redux-saga
+    result.done().then(
       taskResult => {
         if(result.isCancelled())
           cancelEffect(effectId)
