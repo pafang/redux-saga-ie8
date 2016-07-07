@@ -13,17 +13,17 @@ Redux アプリケーションのための副作用ミドルウェア（非同�
 - Reducer は Action ごとの状態遷移を処理する責任を持つ
 - Saga は複雑で非同期的な操作のオーケストレーションに責任を持つ
 
-Saga は Generator 関数を使って作成されます。もし馴染みがないようであれば[リンク集](http://yelouafi.github.io/redux-saga/docs/ExternalResources.html)を参考にしてみてください。
+Saga は Generator 関数を使って作成されます。もし馴染みがないようであれば[リンク集](http://rockallite.github.io/redux-saga-ie8/docs/ExternalResources.html)を参考にしてみてください。
 
 Action Creator を呼び出すたびに実行される Thunk とは異なり、Saga が実行されるのはアプリケーション起動時の1回だけです（ただし、最初に起動する Saga が他の Saga を動的に起動することがあります）。それらはバックグラウンドで実行されるプロセスのように見えます。Saga は Store に送り出される Action を監視して、その Action にもとづいて何をするか決定します: AJAX リクエストのような非同期呼び出しの開始、他の Action の送出、 他の Saga の動的な起動など。
 
-`redux-saga` では上記のようなタスクを **作用（Effects）** を生成することによって実現します。作用は `redux-saga` ミドルウェアによって実行される手順が含まれた単純な JavaScript のオブジェクトです。例えるなら、Redux の Action が Store によって実行される手順が含まれているオブジェクトであることに似ています。`redux-saga` は、非同期関数を呼び出したり、Store に Action を送り出したり、バックグラウンドのタスクを起動したり、特定の条件を満たす Action を待ち受けたり、様々なタスクに応じた **作用を生成する関数（Effect Creator）** を提供します。
+`redux-saga-ie8` では上記のようなタスクを **作用（Effects）** を生成することによって実現します。作用は `redux-saga-ie8` ミドルウェアによって実行される手順が含まれた単純な JavaScript のオブジェクトです。例えるなら、Redux の Action が Store によって実行される手順が含まれているオブジェクトであることに似ています。`redux-saga-ie8` は、非同期関数を呼び出したり、Store に Action を送り出したり、バックグラウンドのタスクを起動したり、特定の条件を満たす Action を待ち受けたり、様々なタスクに応じた **作用を生成する関数（Effect Creator）** を提供します。
 
-Generator によって `redux-saga` で非同期コードをシンプルな同期スタイルで書き下すことができます。`async/await` 関数によってできることに似ていますが、Generator は `async` 関数では困難ないくつかのことを可能にします。
+Generator によって `redux-saga-ie8` で非同期コードをシンプルな同期スタイルで書き下すことができます。`async/await` 関数によってできることに似ていますが、Generator は `async` 関数では困難ないくつかのことを可能にします。
 
 Saga がプレーンなオブジェクトを生成するということは、イテレータを回すことで生成されるオブジェクトを単純に同値チェックすればよいだけになり、Generator 内部のすべてのロジックをテストしやすくします。
 
-さらに `redux-saga` で開始したタスクは手動・自動（他の作用と競争させてたり）を問わずいつでもキャンセル可能です。
+さらに `redux-saga-ie8` で開始したタスクは手動・自動（他の作用と競争させてたり）を問わずいつでもキャンセル可能です。
 
 # はじめよう
 
@@ -118,16 +118,16 @@ sagaMiddleware.run(mySaga)
 
 # ドキュメント
 
-- [イントロダクション](http://yelouafi.github.io/redux-saga/docs/introduction/index.html)
-- [基本コンセプト](http://yelouafi.github.io/redux-saga/docs/basics/index.html)
-- [応用コンセプト](http://yelouafi.github.io/redux-saga/docs/advanced/index.html)
-- [レシピ](http://yelouafi.github.io/redux-saga/docs/recipes/index.html)
-- [外部リソース](http://yelouafi.github.io/redux-saga/docs/ExternalResources.html)
-- [トラブルシューティング](http://yelouafi.github.io/redux-saga/docs/Troubleshooting.html)
-- [用語集](http://yelouafi.github.io/redux-saga/docs/Glossary.html)
-- [API リファレンス](http://yelouafi.github.io/redux-saga/docs/api/index.html)
+- [イントロダクション](http://rockallite.github.io/redux-saga-ie8/docs/introduction/index.html)
+- [基本コンセプト](http://rockallite.github.io/redux-saga-ie8/docs/basics/index.html)
+- [応用コンセプト](http://rockallite.github.io/redux-saga-ie8/docs/advanced/index.html)
+- [レシピ](http://rockallite.github.io/redux-saga-ie8/docs/recipes/index.html)
+- [外部リソース](http://rockallite.github.io/redux-saga-ie8/docs/ExternalResources.html)
+- [トラブルシューティング](http://rockallite.github.io/redux-saga-ie8/docs/Troubleshooting.html)
+- [用語集](http://rockallite.github.io/redux-saga-ie8/docs/Glossary.html)
+- [API リファレンス](http://rockallite.github.io/redux-saga-ie8/docs/api/index.html)
 
-@superRaytin による[中国語のドキュメント](https://github.com/superRaytin/redux-saga-in-chinese)もあります。
+@superRaytin による[中国語のドキュメント](https://github.com/superRaytin/redux-saga-in-chinese)もあります。(Original `redux-saga`, not `redux-saga-ie8`)
 
 
 # ブラウザで umd ビルドを使用する

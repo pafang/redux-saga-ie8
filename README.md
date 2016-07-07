@@ -16,13 +16,13 @@ Sagas are created using Generator functions. If you're not familiar with them yo
 
 Unlike Thunks which get invoked on every action by Action Creators, Sagas are fired only once at the start of the application (but startup Sagas may fire other Sagas dynamically). They can be seen as Processes running in the background. Sagas watch the actions dispatched to the Store, then decide what to do based on dispatched actions: Either making an asynchronous call (like an AJAX request), dispatching other actions to the Store, or even starting other Sagas dynamically.
 
-In `redux-saga` all the above tasks are achieved by yielding **Effects**. Effects are simply JavaScript Objects containing instructions to be executed by the Saga middleware (As an analogy, you can see Redux actions as Objects containing instructions to be executed by the Store). `redux-saga` provides Effect creators for various tasks like calling an asynchronous function, dispatching an action to the Store, starting a background task or waiting for a future action that satisfies a certain condition.
+In `redux-saga-ie8` all the above tasks are achieved by yielding **Effects**. Effects are simply JavaScript Objects containing instructions to be executed by the Saga middleware (As an analogy, you can see Redux actions as Objects containing instructions to be executed by the Store). `redux-saga-ie8` provides Effect creators for various tasks like calling an asynchronous function, dispatching an action to the Store, starting a background task or waiting for a future action that satisfies a certain condition.
 
-Using Generators, `redux-saga` allows you to write your asynchronous code in a simple synchronous style. Just like you can do with `async/await` functions. But Generators allow some things that aren't possible with `async` functions.
+Using Generators, `redux-saga-ie8` allows you to write your asynchronous code in a simple synchronous style. Just like you can do with `async/await` functions. But Generators allow some things that aren't possible with `async` functions.
 
 The fact that Sagas yield plain Objects makes it easy to test all the logic inside your Generator by simply iterating over the yielded Objects and doing simple equality tests.
 
-Furthermore, tasks started in `redux-saga` can be cancelled at any moment either manually or automatically by putting them in a race with other Effects.
+Furthermore, tasks started in `redux-saga-ie8` can be cancelled at any moment either manually or automatically by putting them in a race with other Effects.
 
 # Getting started
 
@@ -126,7 +126,7 @@ sagaMiddleware.run(mySaga)
 - [Glossary](http://rockallite.github.io/redux-saga-ie8/docs/Glossary.html)
 - [API Reference](http://rockallite.github.io/redux-saga-ie8/docs/api/index.html)
 
-There is also a [chinese version of the docs website](https://github.com/superRaytin/redux-saga-in-chinese)
+There is also a [chinese version of the docs website](https://github.com/superRaytin/redux-saga-in-chinese) (Original `redux-saga`, not `redux-saga-ie8`)
 thanks @superRaytin (You may check the referenced version of redux-saga)
 
 

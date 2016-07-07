@@ -644,7 +644,7 @@ runSaga(iterator, {subscribe, dispatch}, [monitor])
 - `dispatch(action) => result`: 用于完成 `put` effect。每次运行`yield put(action)`，`dispatch`会和`action`一起被调用，`dispatch`的返回值被用于完成`put` effect。Promise结果自动完成或者取消。
 
 - `monitor(sagaAction)` (可选): 是被用于调用所有Saga关联事件的回调。在中间件的版本，所有action都调度到Redux Store。详细查看[sagaMonitor example]
-  (https://github.com/yelouafi/redux-saga/blob/master/examples/sagaMonitor.js) 的用法.
+  (https://github.com/rockallite/redux-saga-ie8/blob/master/examples/sagaMonitor.js) 的用法.
 
 参数`subscribe`用于完成`take(action)` effects，每次`subscribe` 运行一个action或者他的回调，Saga会阻塞在`take(PATTERN)`，并且take匹配当前即将运行的action，并且唤醒这个action。
 

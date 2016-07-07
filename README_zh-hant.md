@@ -645,7 +645,7 @@ runSaga(iterator, {subscribe, dispatch}, [monitor])
   將與 `action` 一起調用。`dispatch` 的回傳值將用來實現 `put` effect。Promise 結果將自動地解決/拒絕。
 
 - `monitor(sagaAction)` （optional）：用來分派所有 Saga 相關事件的回呼函示。在中介軟體的版本中，所有 actions 將被分派到 Redux store。請見 [sagaMonitor 使用範例]
-  (https://github.com/yelouafi/redux-saga/blob/master/examples/sagaMonitor.js).
+  (https://github.com/rockallite/redux-saga-ie8/blob/master/examples/sagaMonitor.js).
 
 `subscribe` 用來實現 `take(action)` effect。每當 `subscribe` 發出 action 到其回呼函示，所有 sagas 將被 `take(PATTERN)` 阻塞，而取得符合目前進入的 action 樣式將會再開始動作。
 

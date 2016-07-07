@@ -983,13 +983,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  } : arguments[1];
 	  var dispatch = arguments.length <= 2 || arguments[2] === undefined ? _utils.noop : arguments[2];
 	  var getState = arguments.length <= 3 || arguments[3] === undefined ? _utils.noop : arguments[3];
-	  var monitor = arguments[4];
+	  var options = arguments.length <= 4 || arguments[4] === undefined ? {} : arguments[4];
 	  var parentEffectId = arguments.length <= 5 || arguments[5] === undefined ? 0 : arguments[5];
 	  var name = arguments.length <= 6 || arguments[6] === undefined ? 'anonymous' : arguments[6];
 	  var cont = arguments[7];
 
 	  (0, _utils.check)(iterator, _utils.is.iterator, NOT_ITERATOR_ERROR);
 
+	  var sagaMonitor = options.sagaMonitor;
+	  var logger = options.logger;
+
+	  var log = logger || _utils.log;
 	  var stdChannel = (0, _channel.eventChannel)(subscribe);
 	  /**
 	    Tracks the current effect cancellation
@@ -1102,7 +1106,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    } catch (error) {
 	      if (mainTask.isCancelled) {
-	        (0, _utils.log)('error', 'uncaught at ' + name, error.message);
+	        log('error', 'uncaught at ' + name, error.message);
 	      }
 	      mainTask.isMainRunning = false;
 	      mainTask.cont(error, true);
@@ -1114,7 +1118,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    stdChannel.close();
 	    if (!isErr) {
 	      if (result === TASK_CANCEL && isDev) {
-	        (0, _utils.log)('info', name + ' has been cancelled', '');
+	        log('info', name + ' has been cancelled', '');
 	      }
 	      iterator._result = result;
 	      iterator._deferredEnd && iterator._deferredEnd.resolve(result);
@@ -1123,7 +1127,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        result.sagaStack = 'at ' + name + ' \n ' + (result.sagaStack || result.stack);
 	      }
 	      if (!task.cont) {
-	        (0, _utils.log)('error', 'uncaught', result.sagaStack || result.stack);
+	        log('error', 'uncaught', result.sagaStack || result.stack);
 	      }
 	      iterator._error = result;
 	      iterator._isAborted = true;
@@ -1141,7 +1145,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var cb = arguments[3];
 
 	    var effectId = nextEffectId();
-	    monitor && monitor.effectTriggered({ effectId: effectId, parentEffectId: parentEffectId, label: label, effect: effect });
+	    sagaMonitor && sagaMonitor.effectTriggered({ effectId: effectId, parentEffectId: parentEffectId, label: label, effect: effect });
 
 	    /**
 	      completion callback and cancel callback are mutually exclusive
@@ -1158,8 +1162,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      effectSettled = true;
 	      cb.cancel = _utils.noop; // defensive measure
-	      if (monitor) {
-	        isErr ? monitor.effectRejected(effectId, res) : monitor.effectResolved(effectId, res);
+	      if (sagaMonitor) {
+	        isErr ? sagaMonitor.effectRejected(effectId, res) : sagaMonitor.effectResolved(effectId, res);
 	      }
 
 	      cb(res, isErr);
@@ -1183,11 +1187,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      try {
 	        currCb.cancel();
 	      } catch (err) {
-	        (0, _utils.log)('error', 'uncaught at ' + name, err.message);
+	        log('error', 'uncaught at ' + name, err.message);
 	      }
 	      currCb.cancel = _utils.noop; // defensive measure
 
-	      monitor && monitor.effectCancelled(effectId);
+	      sagaMonitor && sagaMonitor.effectCancelled(effectId);
 	    };
 
 	    /**
@@ -1223,7 +1227,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  function resolveIterator(iterator, effectId, name, cb) {
-	    proc(iterator, subscribe, dispatch, getState, monitor, effectId, name, cb);
+	    proc(iterator, subscribe, dispatch, getState, options, effectId, name, cb);
 	  }
 
 	  function runTakeEffect(_ref, cb) {
@@ -1356,7 +1360,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	    _asap2.default.suspend();
-	    var task = proc(_iterator, subscribe, dispatch, getState, monitor, effectId, fn.name, detached ? null : _utils.noop);
+	    var task = proc(_iterator, subscribe, dispatch, getState, options, effectId, fn.name, detached ? null : _utils.noop);
 	    if (!detached) {
 	      if (_iterator._isRunning) {
 	        taskQueue.addTask(task);
@@ -1628,6 +1632,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  }
 
+	  if (options.logger && !_utils.is.func(options.logger)) {
+	    throw new Error('`options.logger` passed to the Saga middleware is not a function!');
+	  }
+
 	  function sagaMiddleware(_ref) {
 	    var getState = _ref.getState;
 	    var dispatch = _ref.dispatch;
@@ -1640,7 +1648,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        args[_key - 1] = arguments[_key];
 	      }
 
-	      return (0, _proc2.default)(saga.apply(undefined, args), sagaEmitter.subscribe, dispatch, getState, options.sagaMonitor, 0, saga.name);
+	      return (0, _proc2.default)(saga.apply(undefined, args), sagaEmitter.subscribe, dispatch, getState, options, 0, saga.name);
 	    }
 
 	    return function (next) {
@@ -1684,15 +1692,17 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	function runSaga(iterator, _ref, monitor) {
+	function runSaga(iterator, _ref) {
 	  var subscribe = _ref.subscribe;
 	  var dispatch = _ref.dispatch;
 	  var getState = _ref.getState;
+	  var sagaMonitor = _ref.sagaMonitor;
+	  var logger = _ref.logger;
 
 
 	  (0, _utils.check)(iterator, _utils.is.iterator, "runSaga must be called on an iterator");
 
-	  return (0, _proc2.default)(iterator, subscribe, dispatch, getState, monitor);
+	  return (0, _proc2.default)(iterator, subscribe, dispatch, getState, { sagaMonitor: sagaMonitor, logger: logger });
 	}
 
 /***/ },
