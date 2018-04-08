@@ -49,7 +49,7 @@ export function takeEveryHelper(pattern, worker, ...args) {
   return fsmIterator({
     q1() { return ['q2', yTake, setAction] },
     q2() { return action === END ? [qEnd] : ['q1', yFork(action)] }
-  }, 'q1', `takeEvery(${safeName(pattern)}, ${worker.name})`)
+  }, 'q1', `takeEveryHelper(${safeName(pattern)}, ${worker.name})`)
 }
 
 export function takeLatestHelper(pattern, worker, ...args) {
@@ -71,5 +71,5 @@ export function takeLatestHelper(pattern, worker, ...args) {
     q3() {
       return ['q1', yFork(action), setTask]
     }
-  }, 'q1', `takeLatest(${safeName(pattern)}, ${worker.name})`)
+  }, 'q1', `takeLatestHelper(${safeName(pattern)}, ${worker.name})`)
 }
