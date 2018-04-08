@@ -602,11 +602,22 @@ export default function proc(
 
   function newTask(id, name, iterator, cont) {
     iterator._deferredEnd = null
-    return {
-      [TASK]: true,
+    const result = {
       id,
       name,
-      get done() {
+      // get done() {
+      //   if(iterator._deferredEnd) {
+      //     return iterator._deferredEnd.promise
+      //   } else {
+      //     const def = deferred()
+      //     iterator._deferredEnd = def
+      //     if(!iterator._isRunning) {
+      //       iterator._error ? def.reject(iterator._error) : def.resolve(iterator._result)
+      //     }
+      //     return def.promise
+      //   }
+      // },
+      done() {
         if(iterator._deferredEnd) {
           return iterator._deferredEnd.promise
         } else {
@@ -627,5 +638,10 @@ export default function proc(
       result: () => iterator._result,
       error: () => iterator._error
     }
+
+    result[TASK] = true;
+
+    return result
+
   }
 }
