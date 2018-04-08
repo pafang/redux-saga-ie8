@@ -45,7 +45,7 @@
   "bugs": {
     "url": "https://github.com/yelouafi/redux-saga/issues"
   },
-  "homepage": "https://github.com/yelouafi/redux-saga#readme",
+  "homepage": "https://github.com/pafang/redux-saga-ie8",
   "dependencies": {},
   "devDependencies": {
     "babel-cli": "^6.1.18",
