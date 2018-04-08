@@ -105,10 +105,7 @@ export function channel(buffer) {
     }
   }
 
-  return {take, put, close,
-    get __takers__() { return takers },
-    get __closed__() { return closed }
-  }
+  return {take, put, close,__takers__: takers,__closed__: closed}
 }
 
 export function eventChannel(subscribe, buffer = buffers.none(), matcher) {
