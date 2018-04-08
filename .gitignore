@@ -35,3 +35,5 @@ es
 
 # docs generated files
 _book
+
+yarn.lock

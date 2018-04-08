@@ -40,7 +40,7 @@ function safeName(pattern) {
   }
 }
 
-export function takeEvery(pattern, worker, ...args) {
+export function takeEveryHelper(pattern, worker, ...args) {
   const yTake = {done: false, value: take(pattern)}
   const yFork = ac => ({done: false, value: fork(worker, ...args, ac)})
 
@@ -52,7 +52,7 @@ export function takeEvery(pattern, worker, ...args) {
   }, 'q1', `takeEvery(${safeName(pattern)}, ${worker.name})`)
 }
 
-export function takeLatest(pattern, worker, ...args) {
+export function takeLatestHelper(pattern, worker, ...args) {
   const yTake = {done: false, value: take(pattern)}
   const yFork = ac => ({done: false, value: fork(worker, ...args, ac)})
   const yCancel = task => ({done: false, value: cancel(task)})
