@@ -1,5 +1,5 @@
 {
-  "name": "redux-saga-ie8",
+  "name": "redux-saga-ie",
   "version": "0.11.0",
   "description": "Saga middleware for Redux to handle Side Effects",
   "main": "lib/index.js",
@@ -13,7 +13,6 @@
     "build:umd:prod": "cross-env BABEL_ENV=cjs webpack src/index.js dist/redux-saga.min.js --config webpack.config.prod.js",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
     "build": "rimraf dist es && npm run build:umd:dev && npm run build:umd:prod && npm run build:es",
-    "prepublish": "npm run check && npm run compile && npm run build",
     "counter": "cross-env BABEL_ENV=cjs node examples/counter/server.js",
     "cancellable-counter": "cross-env BABEL_ENV=cjs node examples/cancellable-counter/server.js",
     "test-counter": "cross-env BABEL_ENV=cjs babel-node examples/counter/test/sagas.js | tap-spec",
